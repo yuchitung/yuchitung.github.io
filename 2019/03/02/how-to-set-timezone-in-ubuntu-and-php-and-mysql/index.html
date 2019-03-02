@@ -5,15 +5,20 @@
   
 
   
-  <title>Yuchi 的學習筆記</title>
+  <title>設定 Ubuntu &amp; php &amp; mysql timezone | Yuchi 的學習筆記</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Yuchi 的學習筆記">
-<meta property="og:url" content="https://yuchitung.github.io/index.html">
+  <meta name="description" content="ubuntu查詢可用 timezone 列表1sudo timedatectl list-timezones 設定 timezone1sudo timedatectl set-timezone America/New_York 接著重啟一些有影響的服務，例如 cron、apache、mysql 等1sudo service cron restart php方法一修改 php.ini12[D">
+<meta name="keywords" content="timezone,ubuntu,php,mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="設定 Ubuntu &amp; php &amp; mysql timezone">
+<meta property="og:url" content="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/index.html">
 <meta property="og:site_name" content="Yuchi 的學習筆記">
+<meta property="og:description" content="ubuntu查詢可用 timezone 列表1sudo timedatectl list-timezones 設定 timezone1sudo timedatectl set-timezone America/New_York 接著重啟一些有影響的服務，例如 cron、apache、mysql 等1sudo service cron restart php方法一修改 php.ini12[D">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-03-02T09:47:45.005Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Yuchi 的學習筆記">
+<meta name="twitter:title" content="設定 Ubuntu &amp; php &amp; mysql timezone">
+<meta name="twitter:description" content="ubuntu查詢可用 timezone 列表1sudo timedatectl list-timezones 設定 timezone1sudo timedatectl set-timezone America/New_York 接著重啟一些有影響的服務，例如 cron、apache、mysql 等1sudo service cron restart php方法一修改 php.ini12[D">
   
     <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
   
@@ -60,9 +65,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-how-to-set-timezone-in-ubuntu-and-php-and-mysql" class="article article-type-post" itemscope="" itemprop="blogPost">
+        <section id="main"><article id="post-how-to-set-timezone-in-ubuntu-and-php-and-mysql" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" class="article-date">
   <time datetime="2019-03-02T09:47:44.000Z" itemprop="datePublished">2019-03-02</time>
@@ -75,8 +78,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/">設定 Ubuntu &amp; php &amp; mysql timezone</a>
+    <h1 class="article-title" itemprop="name">
+      設定 Ubuntu &amp; php &amp; mysql timezone
     </h1>
   
 
@@ -165,69 +168,19 @@
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-singleton" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/03/02/singleton/" class="article-date">
-  <time datetime="2019-03-02T09:45:47.000Z" itemprop="datePublished">2019-03-02</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/02/singleton/">Singleton 設計模式</a>
-    </h1>
+    <a href="/2019/03/02/singleton/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Singleton 設計模式</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="說明"><a href="#說明" class="headerlink" title="說明"></a>說明</h2><p>同個請求的生命週期裡，對於使用 singleton 的類別永遠只會產生一個實體 (instance)<br></p>
-<h3 id="做法"><a href="#做法" class="headerlink" title="做法"></a>做法</h3><p>把建構子設為 private，建立一個 static 的 getInstance function ，在裡面控制只能 new 一次實體。<br></p>
-<h3 id="常用情境"><a href="#常用情境" class="headerlink" title="常用情境"></a>常用情境</h3><ul>
-<li>登入</li>
-<li>快取</li>
-<li>資料庫連線</li>
-<li>與驅動程式的溝通</li>
-</ul>
-<h3 id="PHP-實作範例"><a href="#PHP-實作範例" class="headerlink" title="PHP 實作範例"></a>PHP 實作範例</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/** Singleton instance */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> $instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Constructor not to be used */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Gets the instance of Singleton.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> self</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">getInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">isset</span>(<span class="keyword">self</span>::$instance)) &#123;</span><br><span class="line">            <span class="keyword">self</span>::$instance = <span class="keyword">new</span> <span class="keyword">self</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>::$instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="多執行緒語言需注意的情況"><a href="#多執行緒語言需注意的情況" class="headerlink" title="多執行緒語言需注意的情況"></a>多執行緒語言需注意的情況</h3><p>要注意多執行緒環境中，可能因時間差造成產生兩的個 instance<br>解法（以 Java 為例）:</p>
-<ul>
-<li><p>使用同步化 （synchronized），缺點為其實只有第一次初始化的時候才需要使用 synchronzied ，因爲 instance 已經產生，後面都是多餘的，這會導致效能的浪費。</p>
-</li>
-<li><p>預先初始化（eager initialization）， 一開始就初始化，不管後面會不會用到，缺點是若沒有用到就是浪費記憶體。</p>
-</li>
-<li><p>使用雙重檢查上鎖，先檢查是否已經建立了 instance，如果沒有才進行同步化，也就是只有第一次呼叫才會使用同步化。</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">synchronized</span>(Singleton.class)&#123;</span><br><span class="line">                <span class="keyword">if</span>(instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                     instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p><a href="https://www.tenlong.com.tw/products/9789867794529" target="_blank" rel="noopener">深入淺出設計模式 (Head First Design Patterns) </a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="cjsrb0ocq0001wqy53jcprvds" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/design-pattern/">design-pattern</a></li></ul>
-
-    </footer>
-  </div>
   
 </article>
-
-
-  
-
 
 </section>
         
