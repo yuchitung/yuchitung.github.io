@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>介面隔離原則 | Yuchi 的學習筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Make fine grained interfaces that are client specific.– Robert C. Martin  介面隔離原則，全名 Interface segregation principle，簡稱 ISP。   定義用戶端程式碼不應該依賴它用不到的介面，依賴的介面都是有其必要性。把不同功能的從介面中分離出來。 圖片來源 秘訣 把 Interface 當成「">
+<meta name="keywords" content="solid,oop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="介面隔離原則">
+<meta property="og:url" content="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/index.html">
+<meta property="og:site_name" content="Yuchi 的學習筆記">
+<meta property="og:description" content="Make fine grained interfaces that are client specific.– Robert C. Martin  介面隔離原則，全名 Interface segregation principle，簡稱 ISP。   定義用戶端程式碼不應該依賴它用不到的介面，依賴的介面都是有其必要性。把不同功能的從介面中分離出來。 圖片來源 秘訣 把 Interface 當成「">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://lh3.googleusercontent.com/KIHAjE5DQyyvIkCP6G1YHLojWaN5aDcDkj60gNWE8OEy54_A1XAzDn6hBQNgH1TRXW4NpX0r6Y1TJzL097ezMmEFZVl71jFpKSQx2aV6-0S4tDY2kbnw3NRjp8tHUjMKv1OMQtUVeLgM95VRwEEJSdfhteNKQsYaxUvoPhZL-3iLLupj-n6TOTS4hzVQ_5-bbKo3wRu69c5xV-qz4OveH1vrDRbR5w9XqEcKV3U2Pf85s7JpCu2iEM8yBleWrC8IwmwHg69FauDo2maLXWhzq6nT9glSJqe5h580-O2Tcjh8uXECtMRDINgvilwGjIkftp2p8hCQInsON6sl49M69uS7j29Rp0TMPMY2x6cDrAn8tAOHaYuEiV98FC3VzRDngPduG6nlmmYgxdIRtDk-z_1QNRNDRkraMXJqve-rj_Qv6j_DnzRtdc2OXJyzk7idP_Hj3CtGrMw_CMKHdBei3kouwp2kuaiEjz07tUVBtbbmzh34iGMDx0OYPY6ApO_Mh5Xt0Tp_lPnSQsE4viaqlaONB6IPzigzuh4ptJWV-gCb9TWbRw65-BvSO1gpyUdT4OHdVpvCVtN4IhjS-jkeHPS-KwNC0-_8xPKhQiEHulYAoGQsG9cmiaqdEJ9iTH8TM-3WPIfHkQM-udR2oL6haTKWjULMYzsP=w800-h600-no">
+<meta property="og:updated_time" content="2019-06-24T14:36:57.931Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="介面隔離原則">
+<meta name="twitter:description" content="Make fine grained interfaces that are client specific.– Robert C. Martin  介面隔離原則，全名 Interface segregation principle，簡稱 ISP。   定義用戶端程式碼不應該依賴它用不到的介面，依賴的介面都是有其必要性。把不同功能的從介面中分離出來。 圖片來源 秘訣 把 Interface 當成「">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/KIHAjE5DQyyvIkCP6G1YHLojWaN5aDcDkj60gNWE8OEy54_A1XAzDn6hBQNgH1TRXW4NpX0r6Y1TJzL097ezMmEFZVl71jFpKSQx2aV6-0S4tDY2kbnw3NRjp8tHUjMKv1OMQtUVeLgM95VRwEEJSdfhteNKQsYaxUvoPhZL-3iLLupj-n6TOTS4hzVQ_5-bbKo3wRu69c5xV-qz4OveH1vrDRbR5w9XqEcKV3U2Pf85s7JpCu2iEM8yBleWrC8IwmwHg69FauDo2maLXWhzq6nT9glSJqe5h580-O2Tcjh8uXECtMRDINgvilwGjIkftp2p8hCQInsON6sl49M69uS7j29Rp0TMPMY2x6cDrAn8tAOHaYuEiV98FC3VzRDngPduG6nlmmYgxdIRtDk-z_1QNRNDRkraMXJqve-rj_Qv6j_DnzRtdc2OXJyzk7idP_Hj3CtGrMw_CMKHdBei3kouwp2kuaiEjz07tUVBtbbmzh34iGMDx0OYPY6ApO_Mh5Xt0Tp_lPnSQsE4viaqlaONB6IPzigzuh4ptJWV-gCb9TWbRw65-BvSO1gpyUdT4OHdVpvCVtN4IhjS-jkeHPS-KwNC0-_8xPKhQiEHulYAoGQsG9cmiaqdEJ9iTH8TM-3WPIfHkQM-udR2oL6haTKWjULMYzsP=w800-h600-no">
+  
+    <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Yuchi 的學習筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://yuchitung.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-interface-segregation-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/24/interface-segregation-principle/" class="article-date">
+  <time datetime="2019-06-24T14:36:03.000Z" itemprop="datePublished">2019-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      介面隔離原則
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>Make fine grained interfaces that are client specific.<br>– <cite>Robert C. Martin</cite></p>
+</blockquote>
+<p>介面隔離原則，全名 <strong>Interface segregation principle</strong>，簡稱 <strong>ISP</strong>。  </p>
+<h2 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h2><p>用戶端程式碼不應該依賴它用不到的介面，依賴的介面都是有其必要性。<br>把不同功能的從介面中分離出來。</p>
+<p><img src="https://lh3.googleusercontent.com/KIHAjE5DQyyvIkCP6G1YHLojWaN5aDcDkj60gNWE8OEy54_A1XAzDn6hBQNgH1TRXW4NpX0r6Y1TJzL097ezMmEFZVl71jFpKSQx2aV6-0S4tDY2kbnw3NRjp8tHUjMKv1OMQtUVeLgM95VRwEEJSdfhteNKQsYaxUvoPhZL-3iLLupj-n6TOTS4hzVQ_5-bbKo3wRu69c5xV-qz4OveH1vrDRbR5w9XqEcKV3U2Pf85s7JpCu2iEM8yBleWrC8IwmwHg69FauDo2maLXWhzq6nT9glSJqe5h580-O2Tcjh8uXECtMRDINgvilwGjIkftp2p8hCQInsON6sl49M69uS7j29Rp0TMPMY2x6cDrAn8tAOHaYuEiV98FC3VzRDngPduG6nlmmYgxdIRtDk-z_1QNRNDRkraMXJqve-rj_Qv6j_DnzRtdc2OXJyzk7idP_Hj3CtGrMw_CMKHdBei3kouwp2kuaiEjz07tUVBtbbmzh34iGMDx0OYPY6ApO_Mh5Xt0Tp_lPnSQsE4viaqlaONB6IPzigzuh4ptJWV-gCb9TWbRw65-BvSO1gpyUdT4OHdVpvCVtN4IhjS-jkeHPS-KwNC0-_8xPKhQiEHulYAoGQsG9cmiaqdEJ9iTH8TM-3WPIfHkQM-udR2oL6haTKWjULMYzsP=w800-h600-no" alt="其實我只是要打個果汁"><br><a href="https://www.supergeneral.com/int/product/multi-functional-stand-mixer-sgkf1096db/" target="_blank" rel="noopener">圖片來源</a></p>
+<h2 id="秘訣"><a href="#秘訣" class="headerlink" title="秘訣"></a>秘訣</h2><ul>
+<li>把 Interface 當成「可以做什麼」， 而不是「是一個什麼」</li>
+<li>減少讓每個 Interface 可以做的事</li>
+<li>如果發現有空實作時，就表示 Interface 可以再細化</li>
+</ul>
+<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>來看看範例。<br>身為一個沒朋友的程序猿，最好的朋友就是家裡的毛小孩。<br>那就先來寫個寵物類別，再來條狗和一隻貓，最好還要能跟我玩飛盤。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Pet</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span>: <span class="title">void</span></span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sleep</span><span class="params">()</span>: <span class="title">void</span></span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">catchFrisbee</span><span class="params">()</span>: <span class="title">void</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">implements</span> <span class="title">Pet</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sleep</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">catchFrisbee</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">implements</span> <span class="title">Pet</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sleep</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">catchFrisbee</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">//cats do not catch frisbees</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">'大膽刁民，竟敢造次!(抓)'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>醒醒吧！貓皇是不會和你玩飛盤的…<br>但是因為是實作了 Pet 介面，硬著頭皮還是要實作 catchFrisbee，<br>結果你家主子不理你，還違反里氏替換原則了…<br>所以，還是不要這樣搞了吧！再來改一改…</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Pet</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span>: <span class="title">void</span></span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sleep</span><span class="params">()</span>: <span class="title">void</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Play</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">catchFrisbee</span><span class="params">()</span>: <span class="title">void</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">implements</span> <span class="title">Pet</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sleep</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrainedDog</span> <span class="keyword">implements</span> <span class="title">Pet</span>, <span class="title">Play</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sleep</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">catchFrisbee</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">implements</span> <span class="title">Pet</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eat</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sleep</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>這次我們把接飛盤這個動作從 Pet 類別抽出來，單獨定義成一個 Play 介面，以後不要再強迫你的主子陪你玩飛盤了。然後，再定義一個 TrainedDog 類別，只有這個類別實作 Play 介面，畢竟狗狗要能接飛盤也是要經過訓練的嘛！</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://youtu.be/SLCajYNcThE?t=4796" target="_blank" rel="noopener">PHP 也有 Day #19 - PHP 返樸歸真系列之從實例學設計模式 by 大澤木小鐵 (Jace Ju)​</a><br><a href="https://clouding.city/php/solid/" target="_blank" rel="noopener">物件導向設計原則 SOLID</a><br><a href="http://teddy-chen-tw.blogspot.com/2014/04/solid.html" target="_blank" rel="noopener">SOLID：五則皆變</a><br><a href="http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod" target="_blank" rel="noopener">The Principles of OOD</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="cjxahkmdr0026rly585gfem8b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/06/24/dependency-inversion-principle/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          依賴反轉原則
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/06/24/least-knowledge-principle/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">最小知識原則</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/interface-segregation-principle/">介面隔離原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/least-knowledge-principle/">最小知識原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/liskov-substitution-principle/">里氏替換原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/open-closed-principle/">封閉開放原則</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Yuchi Tung<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

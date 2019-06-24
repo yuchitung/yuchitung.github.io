@@ -5,20 +5,20 @@
   
 
   
-  <title>crontab 設定 | Yuchi 的學習筆記</title>
+  <title>淺談 SOLID | Yuchi 的學習筆記</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="基本介紹crontab 用來設定 Linux 上例行性工作，由 crond 提供排程服務。 crond 預設有三個地方會有執行腳本設定檔： /etc/crontab : 一般放置系統排程/etc/cron.d/*: 一般放置系統排程，或是自己開發的軟體所需的排程，例如 /etc/cron.d/myJob/var/spool/cron/*: 使用者自己的 crontab 設定  管理使用權限/etc">
-<meta name="keywords" content="linux,job">
+  <meta name="description" content="前言 你該學的不是設計模式而是物件導向開發原則– 大澤木小鐵  初學者在學習設計模式的時候，常常一知半解，學了以後好像也不是能很順利並適當地使用在專案上，筆者也是如此。直到看過鐵哥講解 SOLID 後，才意識到在使用設計模式之前，應該先好好學習 SOLID 的精神。鐵哥曾說過如果能掌握 SOLID，有沒有一定要使用設計模式也就沒有那麼重要了。可以想見，SOLID 是多麽重要的一個概念。 SOLID">
+<meta name="keywords" content="solid,oop">
 <meta property="og:type" content="article">
-<meta property="og:title" content="crontab 設定">
-<meta property="og:url" content="https://yuchitung.github.io/2019/04/08/crontab-setting/index.html">
+<meta property="og:title" content="淺談 SOLID">
+<meta property="og:url" content="https://yuchitung.github.io/2019/06/24/solid/index.html">
 <meta property="og:site_name" content="Yuchi 的學習筆記">
-<meta property="og:description" content="基本介紹crontab 用來設定 Linux 上例行性工作，由 crond 提供排程服務。 crond 預設有三個地方會有執行腳本設定檔： /etc/crontab : 一般放置系統排程/etc/cron.d/*: 一般放置系統排程，或是自己開發的軟體所需的排程，例如 /etc/cron.d/myJob/var/spool/cron/*: 使用者自己的 crontab 設定  管理使用權限/etc">
+<meta property="og:description" content="前言 你該學的不是設計模式而是物件導向開發原則– 大澤木小鐵  初學者在學習設計模式的時候，常常一知半解，學了以後好像也不是能很順利並適當地使用在專案上，筆者也是如此。直到看過鐵哥講解 SOLID 後，才意識到在使用設計模式之前，應該先好好學習 SOLID 的精神。鐵哥曾說過如果能掌握 SOLID，有沒有一定要使用設計模式也就沒有那麼重要了。可以想見，SOLID 是多麽重要的一個概念。 SOLID">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-08T02:49:22.938Z">
+<meta property="og:updated_time" content="2019-06-24T14:31:44.401Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="crontab 設定">
-<meta name="twitter:description" content="基本介紹crontab 用來設定 Linux 上例行性工作，由 crond 提供排程服務。 crond 預設有三個地方會有執行腳本設定檔： /etc/crontab : 一般放置系統排程/etc/cron.d/*: 一般放置系統排程，或是自己開發的軟體所需的排程，例如 /etc/cron.d/myJob/var/spool/cron/*: 使用者自己的 crontab 設定  管理使用權限/etc">
+<meta name="twitter:title" content="淺談 SOLID">
+<meta name="twitter:description" content="前言 你該學的不是設計模式而是物件導向開發原則– 大澤木小鐵  初學者在學習設計模式的時候，常常一知半解，學了以後好像也不是能很順利並適當地使用在專案上，筆者也是如此。直到看過鐵哥講解 SOLID 後，才意識到在使用設計模式之前，應該先好好學習 SOLID 的精神。鐵哥曾說過如果能掌握 SOLID，有沒有一定要使用設計模式也就沒有那麼重要了。可以想見，SOLID 是多麽重要的一個概念。 SOLID">
   
     <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
   
@@ -65,10 +65,10 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-crontab-setting" class="article article-type-post" itemscope="" itemprop="blogPost">
+        <section id="main"><article id="post-solid" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/04/08/crontab-setting/" class="article-date">
-  <time datetime="2019-04-08T02:45:41.000Z" itemprop="datePublished">2019-04-08</time>
+    <a href="/2019/06/24/solid/" class="article-date">
+  <time datetime="2019-06-24T14:31:44.000Z" itemprop="datePublished">2019-06-24</time>
 </a>
     
   </div>
@@ -79,7 +79,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      crontab 設定
+      淺談 SOLID
     </h1>
   
 
@@ -87,63 +87,25 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="基本介紹"><a href="#基本介紹" class="headerlink" title="基本介紹"></a>基本介紹</h2><p>crontab 用來設定 Linux 上例行性工作，由 crond 提供排程服務。</p>
-<p>crond 預設有三個地方會有執行腳本設定檔：</p>
-<p><code>/etc/crontab</code> : 一般放置系統排程<br><code>/etc/cron.d/*</code>: 一般放置系統排程，或是自己開發的軟體所需的排程，例如 /etc/cron.d/myJob<br><code>/var/spool/cron/*</code>: 使用者自己的 crontab 設定</p>
-<hr>
-<h3 id="管理使用權限"><a href="#管理使用權限" class="headerlink" title="管理使用權限"></a>管理使用權限</h3><p><code>/etc/cron.allow</code>：紀錄可以使用的帳號<br><code>/etc/cron.deny</code>：紀錄不可以使用的帳號</p>
-<p>建議擇一使用即可</p>
-<hr>
-<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p><code>設定個別使用者的 crontab</code></p>
-<p>編輯排程，其真正代表的是編輯 /usr/bin/crontab 這個執行檔</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br></pre></td></tr></table></figure>
-<p>移除所有的 crontab 的工作內容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -r</span><br></pre></td></tr></table></figure>
-<p>顯示目前排程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br></pre></td></tr></table></figure>
-<p>改變排程的執行身份</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -u</span><br></pre></td></tr></table></figure>
-<p><code>設定系統的 crontab</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/crontab</span><br></pre></td></tr></table></figure>
-<h3 id="啟動服務"><a href="#啟動服務" class="headerlink" title="啟動服務"></a>啟動服務</h3><p>通常 crontab 設定完即啟用設定，但有些 Unix 版本如可能不會馬上啟用。<br>這時候需要重新啟動 crond 服務</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart crond</span><br></pre></td></tr></table></figure>
-<h2 id="規則"><a href="#規則" class="headerlink" title="規則"></a>規則</h2><table>
-<thead>
-<tr>
-<th>分</th>
-<th>小時</th>
-<th>日</th>
-<th>月</th>
-<th>星期</th>
-<th>執行身份</th>
-<th>指令</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0~59</td>
-<td>0~23</td>
-<td>1~31</td>
-<td>1-12</td>
-<td>0-6</td>
-<td>帳號</td>
-<td>sh myJob.sh</td>
-</tr>
-</tbody>
-</table>
-<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>每分鐘執行一次：輸出文字至檔案 test.txt</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * echo &apos;test&apos; &gt;&gt; /home/yuchi/test.txt</span><br></pre></td></tr></table></figure>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>online crontab editor<br><a href="https://crontab.guru/" target="_blank" rel="noopener">https://crontab.guru/</a></p>
-<p><a href="https://code.kpman.cc/2015/02/11/%E5%88%A9%E7%94%A8-crontab-%E4%BE%86%E5%81%9A-Linux-%E5%9B%BA%E5%AE%9A%E6%8E%92%E7%A8%8B/" target="_blank" rel="noopener">https://code.kpman.cc/2015/02/11/%E5%88%A9%E7%94%A8-crontab-%E4%BE%86%E5%81%9A-Linux-%E5%9B%BA%E5%AE%9A%E6%8E%92%E7%A8%8B/</a></p>
-<p><a href="http://linux.vbird.org/linux_basic/0430cron.php" target="_blank" rel="noopener">http://linux.vbird.org/linux_basic/0430cron.php</a></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>你該學的不是設計模式<br>而是物件導向開發原則<br>– <cite>大澤木小鐵</cite></p>
+</blockquote>
+<p>初學者在學習設計模式的時候，常常一知半解，學了以後好像也不是能很順利並適當地使用在專案上，筆者也是如此。直到看過鐵哥講解 SOLID 後，才意識到在使用設計模式之前，應該先好好學習 SOLID 的精神。鐵哥曾說過如果能掌握 SOLID，有沒有一定要使用設計模式也就沒有那麼重要了。可以想見，SOLID 是多麽重要的一個概念。</p>
+<h2 id="SOLID"><a href="#SOLID" class="headerlink" title="SOLID"></a>SOLID</h2><p>SOLID 是由 Robert C. Martin(Uncle Bob)在 Agile software development (2002) 一書中提到的五個設計原則。很推薦做為物件導向程式開發時的一些心法，是五個概念的縮寫，但是在學習 SOLID 時有的文章也會列入 LKP ，所以筆者也將之列了進來：</p>
+<p><strong>單一職責原則 (Single responsibility principle, SRP)</strong><br><strong>開放封閉原則 (Open-Close principle, OCP)</strong><br><strong>里氏替換原則 (Liskov substitution principle, LSP)</strong><br><strong>最小知識原則 (Least knowledge principle,LKP)</strong><br><strong>介面隔離原則 (Interface segregation principle, ISP)</strong><br><strong>依賴反轉原則 (Dependency inversion principle, DIP)</strong></p>
+<p>若是開發的時候能遵守這六個原則，程式的品質也會大大提升。</p>
+<p>再次節錄一段鐵哥在簡報裡放的整理：</p>
+<p><strong>SRP: 降低單一類別被「改變」所影響的機會</strong><br><strong>OCP: 讓主要類別不會因為「新需求」而改變</strong><br><strong>LSP: 避免繼承時子類別所造成的「行為改變」</strong><br><strong>LKP: 避免暴露過多資訊造成用戶端因流程調整而改變</strong><br><strong>ISP: 降低用戶端因為不相關介面而被改變</strong><br><strong>DIP: 避免高階程式因為低階程式改變而被迫改變</strong>  </p>
+<h2 id="面對改變"><a href="#面對改變" class="headerlink" title="面對改變"></a>面對改變</h2><p>如果看完了這些原則，也許會發現其實 SOLID 就是在說<code>面對改變的策略</code>。<br>需求總是一直在變的，但是我們要怎麼在每次變化的過程中，確保改變不會帶來災難，或是埋下壞味道的種子，試著用 SOLID 去思考我們的程式碼，就可以降低改變帶來的影響。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://www.youtube.com/watch?v=SLCajYNcThE&amp;t=954s" target="_blank" rel="noopener">PHP 也有 Day #19 - PHP 返樸歸真系列之從實例學設計模式 by 大澤木小鐵 (Jace Ju)​</a><br><a href="https://clouding.city/php/solid/" target="_blank" rel="noopener">物件導向設計原則 SOLID</a><br><a href="http://teddy-chen-tw.blogspot.com/2014/04/solid.html" target="_blank" rel="noopener">SOLID：五則皆變</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="cjxahkmdm001xrly5x8nz6m5u" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="cjxahkme0002orly5brw8xnxe" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/job/">job</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
 
     </footer>
   </div>
@@ -151,19 +113,19 @@
     
 <nav id="article-nav">
   
-    <a href="/2019/04/15/identify-users-with-cookie-and-session/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/06/24/single-responsibility-principle/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          使用 cookie 和 session 來紀錄使用者狀態
+          單ㄧ職責原則
         
       </div>
     </a>
   
   
-    <a href="/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/06/15/mvc-and-mvvm/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">等待所有 ajax 請求完成</div>
+      <div class="article-nav-title">淺談 MVC &amp; MVVM</div>
     </a>
   
 </nav>

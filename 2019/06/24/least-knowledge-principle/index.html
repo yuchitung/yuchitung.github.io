@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>最小知識原則 | Yuchi 的學習筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最小知識原則，全名 Least Knowledge Principle，簡稱 LKP。   定義一個物件應該對其他物件有最少的了解，盡可能減少類別中的 public method，降低其他類別對此類別的偶合度。  秘訣 已經成形的操作流程就封裝起來 不必要的公開方法就設為 private 或 protected 外面知道的越少，偶合度就越低  範例假設我們今天要開一間洗衣店，首先寫個洗衣服務。 1">
+<meta name="keywords" content="solid,oop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最小知識原則">
+<meta property="og:url" content="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/index.html">
+<meta property="og:site_name" content="Yuchi 的學習筆記">
+<meta property="og:description" content="最小知識原則，全名 Least Knowledge Principle，簡稱 LKP。   定義一個物件應該對其他物件有最少的了解，盡可能減少類別中的 public method，降低其他類別對此類別的偶合度。  秘訣 已經成形的操作流程就封裝起來 不必要的公開方法就設為 private 或 protected 外面知道的越少，偶合度就越低  範例假設我們今天要開一間洗衣店，首先寫個洗衣服務。 1">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://lh3.googleusercontent.com/RQPJ1WYsfRVgcfiL_OTfb1On7-HtxUAonHB_VMYlcDRuyBrPrsPHbmuq10g8oO6r1t4Y1GohtQEXuZczmrL4iQaraw-Qc4jDeYhNAKDQaxpX1CclKsdclgwdkrhQ67QD8fYsLILfnRZX4wIfFHfFRF-mOHTUhDSL3IIm52_mI8eJhseTVkTjjkFRVVRp23JdFHiP_0wS6Cn_qaQrPg6wbpjF4PXqEsoF4ooV75Jq-W4mOuUxFq8rdJuc6tfhiH8-3uaok-rY8KkSzygOp3ok1L7ouuRPoNGgOjDfi1boMX2N_UVeGlB6HcxrojocYaGBA9Pf0ULyyAA1jjjDPwnJAKgWhRrOUPmFT5-U5LOCUCowu57L8mRw2R_s-38wED4mhNxB02CwLDOwRo61iGVqm80JQxEWZbHxuenN9LDM7UCmERT6IDJw7xxtruZz-yvZfos3jbyWURbKgFQcsA61MqDyEZ2SCUBdt9mhLh8eILPD9Koq-yEYF3rQTB1zuYbY0wiJnONxyNF5cKHpcX33vRqlx95Ap53nwlxqC3wMZsoLaW1S4APrs42aOYUUFFHg8Qb81R9BZf-DnXeFistloumx1q16PIifBpkQff8K6D7nuoWDMjUPRj9bWvAkqQNdHQADKYAGUOVIjNG1fXrEpGw9D0lhKHQA=w600-h312-no">
+<meta property="og:updated_time" content="2019-06-24T14:35:24.586Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="最小知識原則">
+<meta name="twitter:description" content="最小知識原則，全名 Least Knowledge Principle，簡稱 LKP。   定義一個物件應該對其他物件有最少的了解，盡可能減少類別中的 public method，降低其他類別對此類別的偶合度。  秘訣 已經成形的操作流程就封裝起來 不必要的公開方法就設為 private 或 protected 外面知道的越少，偶合度就越低  範例假設我們今天要開一間洗衣店，首先寫個洗衣服務。 1">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/RQPJ1WYsfRVgcfiL_OTfb1On7-HtxUAonHB_VMYlcDRuyBrPrsPHbmuq10g8oO6r1t4Y1GohtQEXuZczmrL4iQaraw-Qc4jDeYhNAKDQaxpX1CclKsdclgwdkrhQ67QD8fYsLILfnRZX4wIfFHfFRF-mOHTUhDSL3IIm52_mI8eJhseTVkTjjkFRVVRp23JdFHiP_0wS6Cn_qaQrPg6wbpjF4PXqEsoF4ooV75Jq-W4mOuUxFq8rdJuc6tfhiH8-3uaok-rY8KkSzygOp3ok1L7ouuRPoNGgOjDfi1boMX2N_UVeGlB6HcxrojocYaGBA9Pf0ULyyAA1jjjDPwnJAKgWhRrOUPmFT5-U5LOCUCowu57L8mRw2R_s-38wED4mhNxB02CwLDOwRo61iGVqm80JQxEWZbHxuenN9LDM7UCmERT6IDJw7xxtruZz-yvZfos3jbyWURbKgFQcsA61MqDyEZ2SCUBdt9mhLh8eILPD9Koq-yEYF3rQTB1zuYbY0wiJnONxyNF5cKHpcX33vRqlx95Ap53nwlxqC3wMZsoLaW1S4APrs42aOYUUFFHg8Qb81R9BZf-DnXeFistloumx1q16PIifBpkQff8K6D7nuoWDMjUPRj9bWvAkqQNdHQADKYAGUOVIjNG1fXrEpGw9D0lhKHQA=w600-h312-no">
+  
+    <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Yuchi 的學習筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://yuchitung.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-least-knowledge-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/24/least-knowledge-principle/" class="article-date">
+  <time datetime="2019-06-24T14:35:24.000Z" itemprop="datePublished">2019-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      最小知識原則
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最小知識原則，全名 <strong>Least Knowledge Principle</strong>，簡稱 <strong>LKP</strong>。  </p>
+<h2 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h2><p>一個物件應該對其他物件有最少的了解，盡可能減少類別中的 public method，降低其他類別對此類別的偶合度。</p>
+<p><img src="https://lh3.googleusercontent.com/RQPJ1WYsfRVgcfiL_OTfb1On7-HtxUAonHB_VMYlcDRuyBrPrsPHbmuq10g8oO6r1t4Y1GohtQEXuZczmrL4iQaraw-Qc4jDeYhNAKDQaxpX1CclKsdclgwdkrhQ67QD8fYsLILfnRZX4wIfFHfFRF-mOHTUhDSL3IIm52_mI8eJhseTVkTjjkFRVVRp23JdFHiP_0wS6Cn_qaQrPg6wbpjF4PXqEsoF4ooV75Jq-W4mOuUxFq8rdJuc6tfhiH8-3uaok-rY8KkSzygOp3ok1L7ouuRPoNGgOjDfi1boMX2N_UVeGlB6HcxrojocYaGBA9Pf0ULyyAA1jjjDPwnJAKgWhRrOUPmFT5-U5LOCUCowu57L8mRw2R_s-38wED4mhNxB02CwLDOwRo61iGVqm80JQxEWZbHxuenN9LDM7UCmERT6IDJw7xxtruZz-yvZfos3jbyWURbKgFQcsA61MqDyEZ2SCUBdt9mhLh8eILPD9Koq-yEYF3rQTB1zuYbY0wiJnONxyNF5cKHpcX33vRqlx95Ap53nwlxqC3wMZsoLaW1S4APrs42aOYUUFFHg8Qb81R9BZf-DnXeFistloumx1q16PIifBpkQff8K6D7nuoWDMjUPRj9bWvAkqQNdHQADKYAGUOVIjNG1fXrEpGw9D0lhKHQA=w600-h312-no" alt="你知道的太多了"></p>
+<h2 id="秘訣"><a href="#秘訣" class="headerlink" title="秘訣"></a>秘訣</h2><ul>
+<li>已經成形的操作流程就封裝起來</li>
+<li>不必要的公開方法就設為 private 或 protected</li>
+<li>外面知道的越少，偶合度就越低</li>
+</ul>
+<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>假設我們今天要開一間洗衣店，首先寫個洗衣服務。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LaundryService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> $clothing;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__constrcut</span><span class="params">(array $clothing)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;clothing;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">cleanSpecialStain</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">wash</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">dry</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...       </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">iron</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    $service = <span class="keyword">new</span> LaundryService($dirtyClothes);</span><br><span class="line">    $service-&gt;cleanSpecialStain()</span><br><span class="line">            -&gt;wash()</span><br><span class="line">            -&gt;dry()</span><br><span class="line">            -&gt;iron();</span><br></pre></td></tr></table></figure>
+<p>嗯，看起來很不錯。<br>從清除特殊污漬、清洗、烘乾、到整燙，服務很完整。<br>SOP 流程很明暸， 但是有一個問題，想使用這個洗衣服務的人都居然要知道這個固定的 SOP!!!<br>既然這是固定的作業流程，我們還是將它封裝起來吧！免得有人不照著流程亂搞。或是有一天老闆佛心來地想要把除毛球服務加到固定流程裡，但是客人不知道。</p>
+<p>所以，再來把這個 SOP 流程給包裝起來，讓使用這個服務的人只要呼叫 doLaundry 函式就可以了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LaundryService</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> $clothes;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__constrcut</span><span class="params">(array $clothes)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;clothes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">doLaundry</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;cleanSpecialStain()</span><br><span class="line">             -&gt;wash()</span><br><span class="line">             -&gt;dry()</span><br><span class="line">             -&gt;iron();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">cleanSpecialStain</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">wash</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">dry</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...       </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    privat <span class="function"><span class="keyword">function</span> <span class="title">iron</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...   </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    $service = <span class="keyword">new</span> LaundryService($dirtyClothes);</span><br><span class="line">    $service-&gt;doLaundry();</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://youtu.be/SLCajYNcThE?t=4527" target="_blank" rel="noopener">PHP 也有 Day #19 - PHP 返樸歸真系列之從實例學設計模式 by 大澤木小鐵 (Jace Ju)​</a><br><a href="https://clouding.city/php/solid/" target="_blank" rel="noopener">物件導向設計原則 SOLID</a><br><a href="http://teddy-chen-tw.blogspot.com/2014/04/solid.html" target="_blank" rel="noopener">SOLID：五則皆變</a><br><a href="http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod" target="_blank" rel="noopener">The Principles of OOD</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="cjxahkmdt0028rly54g7py1we" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/06/24/interface-segregation-principle/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          介面隔離原則
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/06/24/liskov-substitution-principle/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">里氏替換原則</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/interface-segregation-principle/">介面隔離原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/least-knowledge-principle/">最小知識原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/liskov-substitution-principle/">里氏替換原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/open-closed-principle/">封閉開放原則</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Yuchi Tung<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
