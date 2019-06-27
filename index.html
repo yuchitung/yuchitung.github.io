@@ -62,6 +62,70 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-cross-origin-resource-sharing" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/28/cross-origin-resource-sharing/" class="article-date">
+  <time datetime="2019-06-27T16:31:23.000Z" itemprop="datePublished">2019-06-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在介紹CORS 之前先討論一下什麼是<code>同源政策</code></p>
+<h2 id="同源政策-same-origin-policy"><a href="#同源政策-same-origin-policy" class="headerlink" title="同源政策 (same origin policy)"></a>同源政策 (same origin policy)</h2><p>意思就是兩個網頁有相同的<code>domain</code>、<code>protocol</code>以及<code>port</code>號，只要三者有一個不相同即為不同源。</p>
+<p>不同源的舉例：</p>
+<ul>
+<li>從自己的網站向一個第三方 API 發出請求。</li>
+<li>從 CDN 載入一些網路資源，例如 CSS、JS、圖片等</li>
+</ul>
+<p>現代瀏覽器基於安全性考量在你發出非同源的請求時，request 會發出，但是 response 會被瀏覽器擋下來，並且在瀏覽器的 console 裡可以看到錯誤訊息，例如下面這張圖：</p>
+<p><img src="https://lh3.googleusercontent.com/OLH4tOE_tnXj9ttrWi-k_N59qOVuGuXhNLYAp-427z_S2qyFGBMz0dJC_tCoQSMCYVPZxAckd7NWklLbfqX7cJa8o3JR1ZReyL6TJw6IItohPM8Oejd_OoRgmD38cATswUMvznBPvW9VC15pILxk32zZsF7o_pdGIUvupR590YGVOranbEbwaOAJPxlTwCOOYoDQ_6SK09J092kJgJ9Lr-eZm03HVbFv8vaWI0sm2VNuLDbvasU6VqCnzGl0lB9tLv7p9ELuP8bkPQ3HzlRygV0LmQci-HxEcpo_ndl9QoNctxk_5gHZrXe0TpYn7fa8p7LXrIRQD1kf3E_TQNywvxd69TDQjUSrNJDA7SFE_-6TTWw3r4Seoe9qEcMhDWf7G_T28a_S33LDiicBug2l71Z7v-c6dPXo0vnLpoUpFDz50O67Iig-U7Q9sPSxPuefI1d-x8Pux5b18TpuHU1ROiNXhD_d8Oh-nEpu7PteKskpmYR_udAAf7KeAd3rJ6sdQjfRumi9lw2Klf0BwuRydPrHRibTdQGhct41WVPnXtQSQO378dHYW2M9LuWblgDTcIUVOUpPfvTaLKXXwiov4YUc8WuATuat9xNqrBTNVQ4rXSnDG8cUYGJTVXgbvc5kpspwHqYe0yEPtAUmu5UJVW5wekpwnKfLbzq9eqfxDDcChmpZUgUzgLJJ=w783-h115-no" alt="same origin policy error"></p>
+<p>那要怎麼解呢？<br>只要依循 CORS 就可以了。<br>因為每當發起一個非同源的請求就會受到 <code>CORS</code> 的控制。  </p>
+<h2 id="CORS-是什麼"><a href="#CORS-是什麼" class="headerlink" title="CORS 是什麼"></a>CORS 是什麼</h2><p><code>cors (Cross Origin Resource Shraring)</code> 就是 跨來源資源共用。</p>
+<p>當你發起一個非同源的請求時， 被請求的 server 必須在 response 的 header 裡加上 <code>Access-Control-Allow-Origin</code> 的設定。<br>當瀏覽器收到 response 後，會查看 response 的 header，如果 header 上的 <code>Access-Control-Allow-Origin</code> 有出現發起請求的 origin ，瀏覽器就會解析 response，結果不會被擋下來。然後 header 大概會長下面這個樣子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: 250</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Server: nginx</span><br><span class="line">Access-Control-Allow-Origin: *</span><br><span class="line">Cache-Control: no-cache, no-store, must-revalidate, private</span><br><span class="line">Expires: 0</span><br><span class="line">Pragma: no-cache</span><br></pre></td></tr></table></figure>
+<p>其中 <code>Access-Control-Allow-Origin: *</code> 表示任何來源都接受。<br>通常除非是公開的 API 服務，不然 server 上都會設定針對 origin 以及 http method 的限制。</p>
+<h2 id="Simple-Request-amp-Preflight-Request"><a href="#Simple-Request-amp-Preflight-Request" class="headerlink" title="Simple Request &amp; Preflight Request"></a>Simple Request &amp; Preflight Request</h2><p>其實 CORS 又分為兩種情況，一種是簡單請求(<code>simple request</code>)，另一種則是預檢請求(<code>preflight request</code>)。<br>通常在沒有自訂 custom header 的情況下都是 simple request，而且也僅限於 GET、HEAD、POST，更多定義可以參考 <a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/CORS#%E7%B0%A1%E5%96%AE%E8%AB%8B%E6%B1%82" target="_blank" rel="noopener">MDN 簡單請求</a>。</p>
+<p>若是其他 HTTP method，如 DELETE 或是 PATCH 等，可能需要 server 驗證的情況，這時候會用到 preflight request。<br>假設我們要 DELETE 一筆資源，preflight request 會先發出一個 OPTION 的請求確認 server 是否接受該請求，如果接受才會發出真正的請求，如果不接受的話請求就會在這裡被中斷， DELETE 不會真的被送出。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><ul>
+<li>對於非同源的請求，server 還是會接受請求並處理，但是同時 server 也要在 header 設定許可的 <code>Access-Control-Allow-Origin</code> ，瀏覽器才會解析請求結果，否則結果會被瀏覽器所擋下</li>
+<li>simple request 只會有一次的請求</li>
+<li>preflight request 會先發出一個 OPTION 請求，待 server 許可後 client 才會發出真正的請求，故會有兩次 request 發出</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://blog.techbridge.cc/2017/05/20/api-ajax-cors-and-jsonp/" target="_blank" rel="noopener">輕鬆理解 Ajax 與跨來源請求</a></p>
+<p><a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/CORS" target="_blank" rel="noopener">跨來源資源共用（CORS）</a></p>
+<p><a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Server-Side_Access_Control" target="_blank" rel="noopener">伺服器端存取控制（CORS）</a></p>
+<p><a href="https://stackoverflow.com/questions/10636611/how-does-access-control-allow-origin-header-work" target="_blank" rel="noopener">How does Access-Control-Allow-Origin header work?</a></p>
+<p><a href="https://w3c.github.io/webappsec-cors-for-developers/#intro" target="_blank" rel="noopener">CORS for Developers</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="cjxevxj1p0000u4y5rvug2j7d" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-dependency-inversion-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/06/24/dependency-inversion-principle/" class="article-date">
@@ -104,7 +168,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="cjxahkmdn0020rly5b5ja12zk" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="cjxevxj1x0003u4y5k5q5w5zg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -159,7 +223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="cjxahkmdr0026rly585gfem8b" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="cjxevxj1z0004u4y5wihyqons" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -211,7 +275,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="cjxahkmdt0028rly54g7py1we" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="cjxevxj230009u4y529z0aliq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -268,7 +332,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="cjxahkmdu002arly5s0rm9y8m" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="cjxevxj28000gu4y5myd8c0x2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -331,7 +395,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="cjxahkmdy002krly5hcnqdo02" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="cjxevxj26000du4y5svjwxv5c" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -388,7 +452,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="cjxahkmdz002mrly5z1n8hzb2" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="cjxevxj2a000lu4y5re69lwgq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -437,7 +501,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="cjxahkme0002orly5brw8xnxe" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="cjxevxj2b000mu4y5xda4d2lc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -508,7 +572,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/" data-id="cjxahkmdv002drly5m7d39md8" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/" data-id="cjxevxj25000cu4y5sjezm9cl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
@@ -635,97 +699,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="cjxahkmdo0022rly53r4rfkc6" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="cjxevxj230008u4y5n6vshbh9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-crontab-setting" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/08/crontab-setting/" class="article-date">
-  <time datetime="2019-04-08T02:45:41.000Z" itemprop="datePublished">2019-04-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/08/crontab-setting/">crontab 設定</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="基本介紹"><a href="#基本介紹" class="headerlink" title="基本介紹"></a>基本介紹</h2><p>crontab 用來設定 Linux 上例行性工作，由 crond 提供排程服務。</p>
-<p>crond 預設有三個地方會有執行腳本設定檔：</p>
-<p><code>/etc/crontab</code> : 一般放置系統排程<br><code>/etc/cron.d/*</code>: 一般放置系統排程，或是自己開發的軟體所需的排程，例如 /etc/cron.d/myJob<br><code>/var/spool/cron/*</code>: 使用者自己的 crontab 設定</p>
-<hr>
-<h3 id="管理使用權限"><a href="#管理使用權限" class="headerlink" title="管理使用權限"></a>管理使用權限</h3><p><code>/etc/cron.allow</code>：紀錄可以使用的帳號<br><code>/etc/cron.deny</code>：紀錄不可以使用的帳號</p>
-<p>建議擇一使用即可</p>
-<hr>
-<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p><code>設定個別使用者的 crontab</code></p>
-<p>編輯排程，其真正代表的是編輯 /usr/bin/crontab 這個執行檔</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br></pre></td></tr></table></figure>
-<p>移除所有的 crontab 的工作內容</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -r</span><br></pre></td></tr></table></figure>
-<p>顯示目前排程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br></pre></td></tr></table></figure>
-<p>改變排程的執行身份</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -u</span><br></pre></td></tr></table></figure>
-<p><code>設定系統的 crontab</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/crontab</span><br></pre></td></tr></table></figure>
-<h3 id="啟動服務"><a href="#啟動服務" class="headerlink" title="啟動服務"></a>啟動服務</h3><p>通常 crontab 設定完即啟用設定，但有些 Unix 版本如可能不會馬上啟用。<br>這時候需要重新啟動 crond 服務</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart crond</span><br></pre></td></tr></table></figure>
-<h2 id="規則"><a href="#規則" class="headerlink" title="規則"></a>規則</h2><table>
-<thead>
-<tr>
-<th>分</th>
-<th>小時</th>
-<th>日</th>
-<th>月</th>
-<th>星期</th>
-<th>執行身份</th>
-<th>指令</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0~59</td>
-<td>0~23</td>
-<td>1~31</td>
-<td>1-12</td>
-<td>0-6</td>
-<td>帳號</td>
-<td>sh myJob.sh</td>
-</tr>
-</tbody>
-</table>
-<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>每分鐘執行一次：輸出文字至檔案 test.txt</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * echo &apos;test&apos; &gt;&gt; /home/yuchi/test.txt</span><br></pre></td></tr></table></figure>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>online crontab editor<br><a href="https://crontab.guru/" target="_blank" rel="noopener">https://crontab.guru/</a></p>
-<p><a href="https://code.kpman.cc/2015/02/11/%E5%88%A9%E7%94%A8-crontab-%E4%BE%86%E5%81%9A-Linux-%E5%9B%BA%E5%AE%9A%E6%8E%92%E7%A8%8B/" target="_blank" rel="noopener">https://code.kpman.cc/2015/02/11/%E5%88%A9%E7%94%A8-crontab-%E4%BE%86%E5%81%9A-Linux-%E5%9B%BA%E5%AE%9A%E6%8E%92%E7%A8%8B/</a></p>
-<p><a href="http://linux.vbird.org/linux_basic/0430cron.php" target="_blank" rel="noopener">http://linux.vbird.org/linux_basic/0430cron.php</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="cjxahkmdm001xrly5x8nz6m5u" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/job/">job</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
 
     </footer>
   </div>
@@ -784,6 +761,10 @@
       <ul>
         
           <li>
+            <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
+          </li>
+        
+          <li>
             <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
           </li>
         
@@ -797,10 +778,6 @@
         
           <li>
             <a href="/2019/06/24/liskov-substitution-principle/">里氏替換原則</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/24/open-closed-principle/">封閉開放原則</a>
           </li>
         
       </ul>

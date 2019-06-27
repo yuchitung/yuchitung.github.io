@@ -62,6 +62,93 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-crontab-setting" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/08/crontab-setting/" class="article-date">
+  <time datetime="2019-04-08T02:45:41.000Z" itemprop="datePublished">2019-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/08/crontab-setting/">crontab 設定</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="基本介紹"><a href="#基本介紹" class="headerlink" title="基本介紹"></a>基本介紹</h2><p>crontab 用來設定 Linux 上例行性工作，由 crond 提供排程服務。</p>
+<p>crond 預設有三個地方會有執行腳本設定檔：</p>
+<p><code>/etc/crontab</code> : 一般放置系統排程<br><code>/etc/cron.d/*</code>: 一般放置系統排程，或是自己開發的軟體所需的排程，例如 /etc/cron.d/myJob<br><code>/var/spool/cron/*</code>: 使用者自己的 crontab 設定</p>
+<hr>
+<h3 id="管理使用權限"><a href="#管理使用權限" class="headerlink" title="管理使用權限"></a>管理使用權限</h3><p><code>/etc/cron.allow</code>：紀錄可以使用的帳號<br><code>/etc/cron.deny</code>：紀錄不可以使用的帳號</p>
+<p>建議擇一使用即可</p>
+<hr>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><p><code>設定個別使用者的 crontab</code></p>
+<p>編輯排程，其真正代表的是編輯 /usr/bin/crontab 這個執行檔</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br></pre></td></tr></table></figure>
+<p>移除所有的 crontab 的工作內容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -r</span><br></pre></td></tr></table></figure>
+<p>顯示目前排程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br></pre></td></tr></table></figure>
+<p>改變排程的執行身份</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -u</span><br></pre></td></tr></table></figure>
+<p><code>設定系統的 crontab</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/crontab</span><br></pre></td></tr></table></figure>
+<h3 id="啟動服務"><a href="#啟動服務" class="headerlink" title="啟動服務"></a>啟動服務</h3><p>通常 crontab 設定完即啟用設定，但有些 Unix 版本如可能不會馬上啟用。<br>這時候需要重新啟動 crond 服務</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart crond</span><br></pre></td></tr></table></figure>
+<h2 id="規則"><a href="#規則" class="headerlink" title="規則"></a>規則</h2><table>
+<thead>
+<tr>
+<th>分</th>
+<th>小時</th>
+<th>日</th>
+<th>月</th>
+<th>星期</th>
+<th>執行身份</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0~59</td>
+<td>0~23</td>
+<td>1~31</td>
+<td>1-12</td>
+<td>0-6</td>
+<td>帳號</td>
+<td>sh myJob.sh</td>
+</tr>
+</tbody>
+</table>
+<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>每分鐘執行一次：輸出文字至檔案 test.txt</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * echo &apos;test&apos; &gt;&gt; /home/yuchi/test.txt</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>online crontab editor<br><a href="https://crontab.guru/" target="_blank" rel="noopener">https://crontab.guru/</a></p>
+<p><a href="https://code.kpman.cc/2015/02/11/%E5%88%A9%E7%94%A8-crontab-%E4%BE%86%E5%81%9A-Linux-%E5%9B%BA%E5%AE%9A%E6%8E%92%E7%A8%8B/" target="_blank" rel="noopener">https://code.kpman.cc/2015/02/11/%E5%88%A9%E7%94%A8-crontab-%E4%BE%86%E5%81%9A-Linux-%E5%9B%BA%E5%AE%9A%E6%8E%92%E7%A8%8B/</a></p>
+<p><a href="http://linux.vbird.org/linux_basic/0430cron.php" target="_blank" rel="noopener">http://linux.vbird.org/linux_basic/0430cron.php</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="cjxevxj1u0001u4y5xf6rfx3t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/job/">job</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-wait-until-all-jquery-ajax-calls-are-done" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" class="article-date">
@@ -92,7 +179,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" data-id="cjxahkme1002rrly51ezv03gh" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" data-id="cjxevxj2e000qu4y5nnt2ctor" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jQuery/">jQuery</a></li></ul>
@@ -140,7 +227,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/" data-id="cjxahkmdv002frly53rggk4b5" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/" data-id="cjxevxj2b000nu4y5682qupx5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
@@ -328,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="cjxahkmdw002irly5cxf3trth" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="cjxevxj2f000su4y5yqiv9ypo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
@@ -467,7 +554,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="cjxahkmeq004frly5jcxht2li" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="cjxevxj420049u4y5xbxfq6eu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/api/">api</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/laravel/">laravel</a></li></ul>
@@ -574,7 +661,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="cjxahkmdq0024rly5uewwsxeh" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="cjxevxj210005u4y5jwso106x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/timezone/">timezone</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ubuntu/">ubuntu</a></li></ul>
@@ -632,7 +719,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="cjxahkme2002srly5vhoz6i3z" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="cjxevxj29000iu4y59a2y0z1z" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/design-pattern/">design-pattern</a></li></ul>
@@ -694,6 +781,10 @@
       <ul>
         
           <li>
+            <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
+          </li>
+        
+          <li>
             <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
           </li>
         
@@ -707,10 +798,6 @@
         
           <li>
             <a href="/2019/06/24/liskov-substitution-principle/">里氏替換原則</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/24/open-closed-principle/">封閉開放原則</a>
           </li>
         
       </ul>

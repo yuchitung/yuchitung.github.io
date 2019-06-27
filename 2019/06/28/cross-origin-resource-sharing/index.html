@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>CORS 的介紹與實作 | Yuchi 的學習筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在介紹CORS 之前先討論一下什麼是同源政策 同源政策 (same origin policy)意思就是兩個網頁有相同的domain、protocol以及port號，只要三者有一個不相同即為不同源。 不同源的舉例：  從自己的網站向一個第三方 API 發出請求。 從 CDN 載入一些網路資源，例如 CSS、JS、圖片等  現代瀏覽器基於安全性考量在你發出非同源的請求時，request 會發出，但是">
+<meta name="keywords" content="web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CORS 的介紹與實作">
+<meta property="og:url" content="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/index.html">
+<meta property="og:site_name" content="Yuchi 的學習筆記">
+<meta property="og:description" content="在介紹CORS 之前先討論一下什麼是同源政策 同源政策 (same origin policy)意思就是兩個網頁有相同的domain、protocol以及port號，只要三者有一個不相同即為不同源。 不同源的舉例：  從自己的網站向一個第三方 API 發出請求。 從 CDN 載入一些網路資源，例如 CSS、JS、圖片等  現代瀏覽器基於安全性考量在你發出非同源的請求時，request 會發出，但是">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://lh3.googleusercontent.com/OLH4tOE_tnXj9ttrWi-k_N59qOVuGuXhNLYAp-427z_S2qyFGBMz0dJC_tCoQSMCYVPZxAckd7NWklLbfqX7cJa8o3JR1ZReyL6TJw6IItohPM8Oejd_OoRgmD38cATswUMvznBPvW9VC15pILxk32zZsF7o_pdGIUvupR590YGVOranbEbwaOAJPxlTwCOOYoDQ_6SK09J092kJgJ9Lr-eZm03HVbFv8vaWI0sm2VNuLDbvasU6VqCnzGl0lB9tLv7p9ELuP8bkPQ3HzlRygV0LmQci-HxEcpo_ndl9QoNctxk_5gHZrXe0TpYn7fa8p7LXrIRQD1kf3E_TQNywvxd69TDQjUSrNJDA7SFE_-6TTWw3r4Seoe9qEcMhDWf7G_T28a_S33LDiicBug2l71Z7v-c6dPXo0vnLpoUpFDz50O67Iig-U7Q9sPSxPuefI1d-x8Pux5b18TpuHU1ROiNXhD_d8Oh-nEpu7PteKskpmYR_udAAf7KeAd3rJ6sdQjfRumi9lw2Klf0BwuRydPrHRibTdQGhct41WVPnXtQSQO378dHYW2M9LuWblgDTcIUVOUpPfvTaLKXXwiov4YUc8WuATuat9xNqrBTNVQ4rXSnDG8cUYGJTVXgbvc5kpspwHqYe0yEPtAUmu5UJVW5wekpwnKfLbzq9eqfxDDcChmpZUgUzgLJJ=w783-h115-no">
+<meta property="og:updated_time" content="2019-06-27T16:31:23.108Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CORS 的介紹與實作">
+<meta name="twitter:description" content="在介紹CORS 之前先討論一下什麼是同源政策 同源政策 (same origin policy)意思就是兩個網頁有相同的domain、protocol以及port號，只要三者有一個不相同即為不同源。 不同源的舉例：  從自己的網站向一個第三方 API 發出請求。 從 CDN 載入一些網路資源，例如 CSS、JS、圖片等  現代瀏覽器基於安全性考量在你發出非同源的請求時，request 會發出，但是">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/OLH4tOE_tnXj9ttrWi-k_N59qOVuGuXhNLYAp-427z_S2qyFGBMz0dJC_tCoQSMCYVPZxAckd7NWklLbfqX7cJa8o3JR1ZReyL6TJw6IItohPM8Oejd_OoRgmD38cATswUMvznBPvW9VC15pILxk32zZsF7o_pdGIUvupR590YGVOranbEbwaOAJPxlTwCOOYoDQ_6SK09J092kJgJ9Lr-eZm03HVbFv8vaWI0sm2VNuLDbvasU6VqCnzGl0lB9tLv7p9ELuP8bkPQ3HzlRygV0LmQci-HxEcpo_ndl9QoNctxk_5gHZrXe0TpYn7fa8p7LXrIRQD1kf3E_TQNywvxd69TDQjUSrNJDA7SFE_-6TTWw3r4Seoe9qEcMhDWf7G_T28a_S33LDiicBug2l71Z7v-c6dPXo0vnLpoUpFDz50O67Iig-U7Q9sPSxPuefI1d-x8Pux5b18TpuHU1ROiNXhD_d8Oh-nEpu7PteKskpmYR_udAAf7KeAd3rJ6sdQjfRumi9lw2Klf0BwuRydPrHRibTdQGhct41WVPnXtQSQO378dHYW2M9LuWblgDTcIUVOUpPfvTaLKXXwiov4YUc8WuATuat9xNqrBTNVQ4rXSnDG8cUYGJTVXgbvc5kpspwHqYe0yEPtAUmu5UJVW5wekpwnKfLbzq9eqfxDDcChmpZUgUzgLJJ=w783-h115-no">
+  
+    <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Yuchi 的學習筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://yuchitung.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-cross-origin-resource-sharing" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/28/cross-origin-resource-sharing/" class="article-date">
+  <time datetime="2019-06-27T16:31:23.000Z" itemprop="datePublished">2019-06-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CORS 的介紹與實作
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在介紹CORS 之前先討論一下什麼是<code>同源政策</code></p>
+<h2 id="同源政策-same-origin-policy"><a href="#同源政策-same-origin-policy" class="headerlink" title="同源政策 (same origin policy)"></a>同源政策 (same origin policy)</h2><p>意思就是兩個網頁有相同的<code>domain</code>、<code>protocol</code>以及<code>port</code>號，只要三者有一個不相同即為不同源。</p>
+<p>不同源的舉例：</p>
+<ul>
+<li>從自己的網站向一個第三方 API 發出請求。</li>
+<li>從 CDN 載入一些網路資源，例如 CSS、JS、圖片等</li>
+</ul>
+<p>現代瀏覽器基於安全性考量在你發出非同源的請求時，request 會發出，但是 response 會被瀏覽器擋下來，並且在瀏覽器的 console 裡可以看到錯誤訊息，例如下面這張圖：</p>
+<p><img src="https://lh3.googleusercontent.com/OLH4tOE_tnXj9ttrWi-k_N59qOVuGuXhNLYAp-427z_S2qyFGBMz0dJC_tCoQSMCYVPZxAckd7NWklLbfqX7cJa8o3JR1ZReyL6TJw6IItohPM8Oejd_OoRgmD38cATswUMvznBPvW9VC15pILxk32zZsF7o_pdGIUvupR590YGVOranbEbwaOAJPxlTwCOOYoDQ_6SK09J092kJgJ9Lr-eZm03HVbFv8vaWI0sm2VNuLDbvasU6VqCnzGl0lB9tLv7p9ELuP8bkPQ3HzlRygV0LmQci-HxEcpo_ndl9QoNctxk_5gHZrXe0TpYn7fa8p7LXrIRQD1kf3E_TQNywvxd69TDQjUSrNJDA7SFE_-6TTWw3r4Seoe9qEcMhDWf7G_T28a_S33LDiicBug2l71Z7v-c6dPXo0vnLpoUpFDz50O67Iig-U7Q9sPSxPuefI1d-x8Pux5b18TpuHU1ROiNXhD_d8Oh-nEpu7PteKskpmYR_udAAf7KeAd3rJ6sdQjfRumi9lw2Klf0BwuRydPrHRibTdQGhct41WVPnXtQSQO378dHYW2M9LuWblgDTcIUVOUpPfvTaLKXXwiov4YUc8WuATuat9xNqrBTNVQ4rXSnDG8cUYGJTVXgbvc5kpspwHqYe0yEPtAUmu5UJVW5wekpwnKfLbzq9eqfxDDcChmpZUgUzgLJJ=w783-h115-no" alt="same origin policy error"></p>
+<p>那要怎麼解呢？<br>只要依循 CORS 就可以了。<br>因為每當發起一個非同源的請求就會受到 <code>CORS</code> 的控制。  </p>
+<h2 id="CORS-是什麼"><a href="#CORS-是什麼" class="headerlink" title="CORS 是什麼"></a>CORS 是什麼</h2><p><code>cors (Cross Origin Resource Shraring)</code> 就是 跨來源資源共用。</p>
+<p>當你發起一個非同源的請求時， 被請求的 server 必須在 response 的 header 裡加上 <code>Access-Control-Allow-Origin</code> 的設定。<br>當瀏覽器收到 response 後，會查看 response 的 header，如果 header 上的 <code>Access-Control-Allow-Origin</code> 有出現發起請求的 origin ，瀏覽器就會解析 response，結果不會被擋下來。然後 header 大概會長下面這個樣子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: 250</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Server: nginx</span><br><span class="line">Access-Control-Allow-Origin: *</span><br><span class="line">Cache-Control: no-cache, no-store, must-revalidate, private</span><br><span class="line">Expires: 0</span><br><span class="line">Pragma: no-cache</span><br></pre></td></tr></table></figure>
+<p>其中 <code>Access-Control-Allow-Origin: *</code> 表示任何來源都接受。<br>通常除非是公開的 API 服務，不然 server 上都會設定針對 origin 以及 http method 的限制。</p>
+<h2 id="Simple-Request-amp-Preflight-Request"><a href="#Simple-Request-amp-Preflight-Request" class="headerlink" title="Simple Request &amp; Preflight Request"></a>Simple Request &amp; Preflight Request</h2><p>其實 CORS 又分為兩種情況，一種是簡單請求(<code>simple request</code>)，另一種則是預檢請求(<code>preflight request</code>)。<br>通常在沒有自訂 custom header 的情況下都是 simple request，而且也僅限於 GET、HEAD、POST，更多定義可以參考 <a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/CORS#%E7%B0%A1%E5%96%AE%E8%AB%8B%E6%B1%82" target="_blank" rel="noopener">MDN 簡單請求</a>。</p>
+<p>若是其他 HTTP method，如 DELETE 或是 PATCH 等，可能需要 server 驗證的情況，這時候會用到 preflight request。<br>假設我們要 DELETE 一筆資源，preflight request 會先發出一個 OPTION 的請求確認 server 是否接受該請求，如果接受才會發出真正的請求，如果不接受的話請求就會在這裡被中斷， DELETE 不會真的被送出。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><ul>
+<li>對於非同源的請求，server 還是會接受請求並處理，但是同時 server 也要在 header 設定許可的 <code>Access-Control-Allow-Origin</code> ，瀏覽器才會解析請求結果，否則結果會被瀏覽器所擋下</li>
+<li>simple request 只會有一次的請求</li>
+<li>preflight request 會先發出一個 OPTION 請求，待 server 許可後 client 才會發出真正的請求，故會有兩次 request 發出</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://blog.techbridge.cc/2017/05/20/api-ajax-cors-and-jsonp/" target="_blank" rel="noopener">輕鬆理解 Ajax 與跨來源請求</a></p>
+<p><a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/CORS" target="_blank" rel="noopener">跨來源資源共用（CORS）</a></p>
+<p><a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Server-Side_Access_Control" target="_blank" rel="noopener">伺服器端存取控制（CORS）</a></p>
+<p><a href="https://stackoverflow.com/questions/10636611/how-does-access-control-allow-origin-header-work" target="_blank" rel="noopener">How does Access-Control-Allow-Origin header work?</a></p>
+<p><a href="https://w3c.github.io/webappsec-cors-for-developers/#intro" target="_blank" rel="noopener">CORS for Developers</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="cjxevxj1p0000u4y5rvug2j7d" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/06/24/dependency-inversion-principle/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">依賴反轉原則</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/interface-segregation-principle/">介面隔離原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/least-knowledge-principle/">最小知識原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/liskov-substitution-principle/">里氏替換原則</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Yuchi Tung<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
