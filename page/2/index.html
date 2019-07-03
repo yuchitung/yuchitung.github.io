@@ -62,6 +62,133 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-identify-users-with-cookie-and-session" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/15/identify-users-with-cookie-and-session/" class="article-date">
+  <time datetime="2019-04-14T23:58:20.000Z" itemprop="datePublished">2019-04-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/15/identify-users-with-cookie-and-session/">使用 cookie 和 session 來紀錄使用者狀態</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>HTTP 本身是無狀態(Stateless)的通訊協定(Protocol)。<br>但是可以用 cookie ＆ session 在客戶端與伺服器之間存取一些使用者狀態。<br><br></p>
+<h2 id="session-amp-cookie"><a href="#session-amp-cookie" class="headerlink" title="session &amp; cookie"></a>session &amp; cookie</h2><p>在講解如何處理使用者狀態之前，先簡單釐清 cookie &amp; session。<br>cookie 是存在 client 端的，session 是存在 server 端的。<br><br></p>
+<h2 id="如何用-session-紀錄使用者狀態"><a href="#如何用-session-紀錄使用者狀態" class="headerlink" title="如何用 session 紀錄使用者狀態"></a>如何用 session 紀錄使用者狀態</h2><p>想像去飲料店點飲料，店員發給你號碼牌，之後你可以用號碼牌來領你的飲料。<br>你就是 client，飲料店就是 server，號碼牌就是 session id。</p>
+<p>換到真實的情境，server 端設定 session 開始後，會自動產生一個 session id。<br>這時候我們可以在 session 裡額外加上 user id。<br>接著在 response headers 會自動被加上下面內容，指示瀏覽器要存一個名為 PHPSESSID 的 cookie。</p>
+<p>response header<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: PHPSESSID=8afd28b38e013478f508473db0dfd172; path=/</span><br></pre></td></tr></table></figure></p>
+<p>之後 client 端每次向 server 請求時就會夾帶著 cookie。</p>
+<p>request header<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cookie: PHPSESSID=8afd28b38e013478f508473db0dfd172</span><br></pre></td></tr></table></figure></p>
+<p>server 端收到後就會根據 session id 來識別這是哪個 session 的請求，<br>這時候我們只要再看看 session 裡的 user id 就知道哪位 user 了。特別說明一下，中間 cookie 夾帶 session id 的傳遞都是背後會自動去執行的，server 和 client 都不用做額外的操作。</p>
+<p>缺點：</p>
+<ul>
+<li>session 過期前會一直佔用 server 資源<br><br></li>
+</ul>
+<h2 id="用-session-實作-login-amp-logout"><a href="#用-session-實作-login-amp-logout" class="headerlink" title="用 session 實作 login &amp; logout"></a>用 session 實作 login &amp; logout</h2><p>以下用 session 來實做一下使用者登入。</p>
+<p>Login form<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=<span class="string">""</span> method=<span class="string">"post"</span>&gt;</span><br><span class="line">    &lt;input type=<span class="string">"text"</span> name=<span class="string">"username"</span> placeholder=<span class="string">"Enter your username"</span> required&gt;</span><br><span class="line">    &lt;input type=<span class="string">"password"</span> name=<span class="string">"password"</span> placeholder=<span class="string">"Enter your password"</span> required&gt;</span><br><span class="line">    &lt;input type=<span class="string">"submit"</span> value=<span class="string">"Submit"</span>&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Process Login<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( ! <span class="keyword">empty</span>( $_POST ) ) &#123;</span><br><span class="line">    <span class="keyword">if</span> ( <span class="keyword">isset</span>( $_POST[<span class="string">'username'</span>] ) &amp;&amp; <span class="keyword">isset</span>( $_POST[<span class="string">'password'</span>] ) ) &#123;</span><br><span class="line">        <span class="comment">// Getting submitted user data from database</span></span><br><span class="line">        $db = <span class="keyword">new</span> mysqli($db_host, $db_user, $db_pass, $db_name);</span><br><span class="line">        $sql = $db-&gt;prepare(<span class="string">"SELECT * FROM users WHERE username = ?"</span>);</span><br><span class="line">        $sql-&gt;bind_param(<span class="string">'s'</span>, $_POST[<span class="string">'username'</span>]);</span><br><span class="line">        $sql-&gt;execute();</span><br><span class="line">        $result = $sql-&gt;get_result();</span><br><span class="line">    	$user = $result-&gt;fetch_object();</span><br><span class="line">    		</span><br><span class="line">    	<span class="comment">// Verify user password and set $_SESSION</span></span><br><span class="line">    	<span class="keyword">if</span> ( password_verify( $_POST[<span class="string">'password'</span>], $user-&gt;password ) ) &#123;</span><br><span class="line">    		$_SESSION[<span class="string">'user_id'</span>] = $user-&gt;ID;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Any protected page<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( <span class="keyword">isset</span>( $_SESSION[<span class="string">'user_id'</span>] ) ) &#123;</span><br><span class="line">    <span class="comment">// Get user data if session exists</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Redirect to the login page</span></span><br><span class="line">    header(<span class="string">"Location: https://www.yourdomain.com/login.php"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Logout<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line">session_destroy();</span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h2 id="如何用-cookie-based-session-紀錄使用者狀態"><a href="#如何用-cookie-based-session-紀錄使用者狀態" class="headerlink" title="如何用 cookie-based session 紀錄使用者狀態"></a>如何用 cookie-based session 紀錄使用者狀態</h2><p>紀錄使用者狀態也可以單純只使用 cookie，把 user 的身份和其他資訊都存在 cookie 裡，然後 server 就只看這個 cookie 去判斷你是誰。<br>當然儲存的資訊都會經過加密處理，但是還是有被破解的風險，而且 cookie 有儲存大小 4k 的限制，所以實務上有可能會 session 和 cookie-based session 配合使用。</p>
+<p>缺點：</p>
+<ul>
+<li>不適合存敏感資訊<br><br></li>
+</ul>
+<h2 id="再聊聊-persistent-cookie-amp-session-cookie"><a href="#再聊聊-persistent-cookie-amp-session-cookie" class="headerlink" title="再聊聊 persistent cookie &amp; session cookie"></a>再聊聊 persistent cookie &amp; session cookie</h2><p>概念上 cookie 又分成兩種：</p>
+<ul>
+<li><p>Persistent cookie</p>
+<p>  就是明確指定 cookie 的存活時間，直到指定的時間為止，即便瀏覽器關閉 cookie 依然活著。</p>
+  <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setcookie(<span class="string">"TestCookie"</span>, $value, time() + <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Session cookie </p>
+<p>  session cookie 則是相反，不指定存活時間，只活在這個瀏覽器的 session 期間，關閉瀏覽器後就被清除了。但是實測後發現如果在 chrome 上有勾選<code>繼續瀏覽上次開啟的網頁(Ｃontinue where you letf off)</code>，session cookie 是不會被清除的。<a href="https://stackoverflow.com/questions/10617954/chrome-doesnt-delete-session-cookies" target="_blank" rel="noopener">Ref</a><br><br></p>
+</li>
+</ul>
+<h2 id="比較一下-cookie-amp-local-storage-amp-session-storage"><a href="#比較一下-cookie-amp-local-storage-amp-session-storage" class="headerlink" title="比較一下 cookie &amp; local storage &amp; session storage"></a>比較一下 cookie &amp; local storage &amp; session storage</h2><p>HTML5 新增的兩種儲存方式： local storage &amp; session storage，下面把他們與 cookie 做一下比較。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cookies</th>
+<th>Local Storage</th>
+<th>Session Storage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capacity</td>
+<td>4kb</td>
+<td>10mb</td>
+<td>5mb</td>
+</tr>
+<tr>
+<td>Browsers</td>
+<td>HTML4/HTML5</td>
+<td>HTML5</td>
+<td>HTML5</td>
+</tr>
+<tr>
+<td>Accessible from</td>
+<td>Any winodw</td>
+<td>Any winodw</td>
+<td>Same tab</td>
+</tr>
+<tr>
+<td>Expires</td>
+<td>Manually set</td>
+<td>Never</td>
+<td>On tab close</td>
+</tr>
+<tr>
+<td>Storage Location</td>
+<td>Browser and server</td>
+<td>Browser only</td>
+<td>Browser only</td>
+</tr>
+<tr>
+<td>Sent with requests</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Restriction</td>
+<td>Same domain</td>
+<td>Same domain</td>
+<td>Same domain</td>
+</tr>
+</tbody>
+</table>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="http://fred-zone.blogspot.com/2014/01/web-session.html" target="_blank" rel="noopener">http://fred-zone.blogspot.com/2014/01/web-session.html</a><br><a href="https://www.johnmorrisonline.com/build-php-login-form-using-sessions/" target="_blank" rel="noopener">https://www.johnmorrisonline.com/build-php-login-form-using-sessions/</a><br><a href="https://www.youtube.com/watch?v=AwicscsvGLg" target="_blank" rel="noopener">https://www.youtube.com/watch?v=AwicscsvGLg</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="cjxn8hslz00228ay58dixxvsg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-crontab-setting" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/08/crontab-setting/" class="article-date">
@@ -137,7 +264,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="cjxevxj1u0001u4y5xf6rfx3t" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="cjxn8hslw001w8ay5ytagxblt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/job/">job</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
@@ -179,7 +306,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" data-id="cjxevxj2e000qu4y5nnt2ctor" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" data-id="cjxn8hsml002s8ay5tnw37fla" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jQuery/">jQuery</a></li></ul>
@@ -227,7 +354,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/" data-id="cjxevxj2b000nu4y5682qupx5" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/" data-id="cjxn8hsm6002i8ay5x13eyxk7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
@@ -415,7 +542,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="cjxevxj2f000su4y5yqiv9ypo" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="cjxn8hsm7002k8ay5noxf864j" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
@@ -554,7 +681,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="cjxevxj420049u4y5xbxfq6eu" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="cjxn8hsnx004k8ay5crl47n7l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/api/">api</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/laravel/">laravel</a></li></ul>
@@ -661,7 +788,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="cjxevxj210005u4y5jwso106x" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="cjxn8hsly00218ay5jm3h6pko" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/timezone/">timezone</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ubuntu/">ubuntu</a></li></ul>
@@ -719,7 +846,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="cjxevxj29000iu4y59a2y0z1z" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="cjxn8hsm5002g8ay5levgg98x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/design-pattern/">design-pattern</a></li></ul>
@@ -749,7 +876,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
     </div>
   </div>
 
@@ -759,7 +886,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
     </div>
   </div>
 
@@ -768,7 +895,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -779,6 +906,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/">XSS 攻擊和防堵</a>
+          </li>
         
           <li>
             <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
@@ -794,10 +925,6 @@
         
           <li>
             <a href="/2019/06/24/least-knowledge-principle/">最小知識原則</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/24/liskov-substitution-principle/">里氏替換原則</a>
           </li>
         
       </ul>

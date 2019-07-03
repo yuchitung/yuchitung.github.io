@@ -62,6 +62,106 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-what-is-cross-site-scripting-and-how-to-prevent-it" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" class="article-date">
+  <time datetime="2019-07-03T12:45:18.000Z" itemprop="datePublished">2019-07-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/">XSS 攻擊和防堵</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 javascript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。</p>
+<p>大致分成三種類型：</p>
+<h2 id="Stored-XSS-儲存型"><a href="#Stored-XSS-儲存型" class="headerlink" title="Stored XSS (儲存型)"></a>Stored XSS (儲存型)</h2><p>經由使用者輸入，然後被存在 server 資料庫中的 JavaScript，若其後用來作為網頁顯示的時候，沒有過濾或是 encode 處理會被視為正常的 JavaScript 執行，藉此達到攻擊別的使用者的效果。常見的場景如<code>論壇文章、留言板</code>等公開的頁面。</p>
+<p>舉個例子，假設有一個 input 可以給使用者留言，如下<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type=<span class="string">"text"</span> placeholder=<span class="string">"請留言"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>然後攻擊者在 input 輸入下面的內容<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&lt;script&gt;alert(<span class="string">"XSS攻擊"</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure></p>
+<p>這樣惡意程式碼會被存在資料庫，之後在瀏覽器解析的時候若沒有經過處理則會被當成一般的 JavaScript 執行，達到攻擊的效果。</p>
+<h2 id="Reflected-XSS-反射型"><a href="#Reflected-XSS-反射型" class="headerlink" title="Reflected XSS (反射型)"></a>Reflected XSS (反射型)</h2><p>反射型 xss 不會被儲存在資料庫中，而是 server 收到來自使用者的請求後，未做檢查就將使用者的請求原封不動顯示於回應的網頁當中以達成攻擊效用。可能會出現在 GET 請求中，常見的場景如<code>網頁的搜尋功能</code>，並且只要將帶有惡意程式碼的網址埋在受害者可能會點擊的地方或是分享給受害者點擊，等待受害者上鉤即可。</p>
+<p>假設有一個網站有個搜尋功能如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://example.com?search=xxx</span><br></pre></td></tr></table></figure></p>
+<p>在搜尋完後會顯示結果在網頁上，DOM 可能會長這樣：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">有關<span class="tag">&lt;<span class="name">span</span> <span class="attr">name</span>=<span class="string">"search"</span>&gt;</span>&#123;&#123;$search&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span>的搜尋結果：</span><br></pre></td></tr></table></figure>
+<p>如果我們在搜尋的時候加入如下的惡意程式碼，等到網頁回傳搜尋結果時就達成攻擊<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http://example.com?search=&lt;script&gt;alert(document.cookie);&lt;/script&gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;&gt;&lt;script &gt;alert(document.cookie)&lt;/script &gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;&gt;&lt;ScRiPt&gt;alert(document.cookie)&lt;/ScRiPt&gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;%3cscript%3ealert(document.cookie)%3c/script%3e</span><br></pre></td></tr></table></figure></p>
+<h2 id="DOM-Based-XSS"><a href="#DOM-Based-XSS" class="headerlink" title="DOM-Based XSS"></a>DOM-Based XSS</h2><p>藉由 DOM 的漏洞來攻擊，在 DOM 埋入惡意程式碼，藉此來攻擊。</p>
+<p>假設網頁上有一段 DOM 如下，<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> send = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> name = <span class="built_in">document</span>.getElementById(<span class="string">'your_name'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">'name'</span>).innerHTML = name;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"your_name"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"send();"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>如果輸入下面的內容，就可以破壞 DOM，執行 JavaScript 達成攻擊了，可以到<a href="https://jsfiddle.net/tracy770830/nyzbfo86/" target="_blank" rel="noopener">這裡</a>測試。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=# onerror=&quot;alert(&apos;XSS 攻擊&apos;);&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>根據這三種類型可以整理出以下的表格：</p>
+<table>
+<thead>
+<tr>
+<th>惡意程式碼</th>
+<th>存放的位置</th>
+<th>插入點</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>儲存型 XSS</td>
+<td>後端資料庫</td>
+<td>HTML</td>
+</tr>
+<tr>
+<td>反射型 XSS</td>
+<td>URL</td>
+<td>HTML</td>
+</tr>
+<tr>
+<td>DOM 型 XSS</td>
+<td>後端資料庫/前端儲存/URL</td>
+<td>前端 JavaScript</td>
+</tr>
+</tbody>
+</table>
+<h2 id="防堵方法"><a href="#防堵方法" class="headerlink" title="防堵方法"></a>防堵方法</h2><p>一般來說，防堵的方式不外乎幾種，像是對於使用者傳來的內容做驗證、過濾或是轉譯。驗證的話，有些若是有明確需求的欄位如名字、電話、email可以使用正則式做驗證，拒絕驗證失敗的內容，此為白名單的作法。而另外一種是只要遇到指定的字元如&lt;、&gt;、”、’、&amp;一律過濾掉或是轉譯，但是即便是這樣，攻擊者還是有很多手法可以規避，例如改變字元大小寫、填充額外字元像是空白、使用URL編碼、或是使用等價字元等都可以規避驗證。而且可以被惡意注入的地方從HTML到JS再到CSS都有可能 ，所以 XSS手法變化萬千，如何防堵是個長遠的議題。</p>
+<p>個人傾向在輸出時做防堵，不要在存進資料庫時做 encode。<br>原因如下：</p>
+<ul>
+<li>如果 encode 的方式選錯或是要修改處理會很麻煩</li>
+<li>如果有搜尋的需求一樣要根據 encode 的方式處理</li>
+<li>根據資料之後可能會被應用的場景不同，可能需要做不同的處理，事先 encode 可能會很麻煩</li>
+</ul>
+<p>特別說明一下，這邊是指輸入至 database 不過濾或是 encode html 和 javascript，但是仍要防堵 SQL injection。</p>
+<p>那麼具體來說防堵要怎麼做呢？<br>以下針對不同類型的 XSS 討論一下各別的防堵方法：<br>首先，儲存型和反射型 XSS 都是在前端把惡意程式碼插入到 HTML 上，然後讓瀏覽器執行惡意的 JavaScript 達成攻擊。</p>
+<p>防堵的方法有兩種：</p>
+<ul>
+<li>改成純前端渲染，把程式碼和資料分隔開<br>  一開始先載入一個不含資料的 HTML，資料都是後來由 js append 上 HTML，並且使用屬性明確的函式處理，例如 .innerText、.setAttribute、.style，避免惡意的程式碼被執行。</li>
+<li>對 HTML 做充分轉義<br>  如果應用不適合使用純前端渲染的模式，例如有 SEO 需求的考量，需要拼接 HTML，就必須善用模版引擎(template engine) 或是轉譯庫套件</li>
+</ul>
+<p>而 DOM-Based XSS 則是因為 JavaScript 在執行過程中未對使用者輸入的資料做完善的檢查，導致惡意程式碼被插入 DOM 所產生的攻擊。防堵的方式為儘量減少使用 .innerHTML、.outerHTML、.document.write()等方法，轉而使用<code>.textContent、.setAttribute</code>等。此外，DOM 裡的一些監聽事件如 <code>location、onclick、onerror、onload、onmouseover</code>、以及 <code>&lt;a&gt;</code> 標籤的 href 屬性都能把字串作為程式碼執行，使用時需要非常小心。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>XSS 的重點在於<code>輸出端的防堵</code>，所以<code>謹慎處理從使用者端取得的資料</code>以及<code>過濾敏感字元</code>是可以防堵簡單的 XSS 攻擊，但仍可能被破解。XSS 的攻擊往往道高一尺魔高一丈，善用成熟的模版引擎以及轉譯套件庫也是可以參考的選項。並且時常閱讀 XSS Prevention Cheat Sheet 相關的文件以及注意 OWASP ESAPI（Enterprise Security API）這個專案上的最新攻擊手法，才能儘量降低服務被XSS 攻擊的風險。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet" target="_blank" rel="noopener">XSS Filter Evasion Cheat Sheet</a></p>
+<p><a href="https://www.jishuwen.com/d/2WFh/zh-tw" target="_blank" rel="noopener">前端安全系列（一）：如何防止XSS攻擊？</a></p>
+<p><a href="https://www.owasp.org/index.php/DOM_Based_XSS" target="_blank" rel="noopener">DOM Based XSS</a></p>
+<p><a href="https://www.ithome.com.tw/voice/115685" target="_blank" rel="noopener">XSS與ESAPI</a></p>
+<p><a href="https://www.owasp.org/index.php/Testing_for_Reflected_Cross_site_scripting_(OTG-INPVAL-001)" target="_blank" rel="noopener">Testing for Reflected Cross site scripting (OTG-INPVAL-001)</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="cjxn8hsm8002n8ay5fka482qo" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/">security</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-cross-origin-resource-sharing" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/06/28/cross-origin-resource-sharing/" class="article-date">
@@ -114,7 +214,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="cjxevxj1p0000u4y5rvug2j7d" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="cjxn8hslu001r8ay5xlz5rw0o" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
@@ -168,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="cjxevxj1x0003u4y5k5q5w5zg" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="cjxn8hslt001p8ay5rrb1ihfl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -223,7 +323,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="cjxevxj1z0004u4y5wihyqons" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="cjxn8hslx001y8ay51zdb1ozb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -275,7 +375,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="cjxevxj230009u4y529z0aliq" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="cjxn8hsm100248ay549vhsai7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -332,7 +432,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="cjxevxj28000gu4y5myd8c0x2" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="cjxn8hsm100268ay5m2brq849" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -395,7 +495,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="cjxevxj26000du4y5svjwxv5c" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="cjxn8hsm3002b8ay5u1q40ehj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -452,7 +552,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="cjxevxj2a000lu4y5re69lwgq" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="cjxn8hsm4002e8ay51fgkegsr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -501,7 +601,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="cjxevxj2b000mu4y5xda4d2lc" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="cjxn8hsm9002p8ay5l637i3wq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -572,134 +672,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/" data-id="cjxevxj25000cu4y5sjezm9cl" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-identify-users-with-cookie-and-session" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/15/identify-users-with-cookie-and-session/" class="article-date">
-  <time datetime="2019-04-14T23:58:20.000Z" itemprop="datePublished">2019-04-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/15/identify-users-with-cookie-and-session/">使用 cookie 和 session 來紀錄使用者狀態</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>HTTP 本身是無狀態(Stateless)的通訊協定(Protocol)。<br>但是可以用 cookie ＆ session 在客戶端與伺服器之間存取一些使用者狀態。<br><br></p>
-<h2 id="session-amp-cookie"><a href="#session-amp-cookie" class="headerlink" title="session &amp; cookie"></a>session &amp; cookie</h2><p>在講解如何處理使用者狀態之前，先簡單釐清 cookie &amp; session。<br>cookie 是存在 client 端的，session 是存在 server 端的。<br><br></p>
-<h2 id="如何用-session-紀錄使用者狀態"><a href="#如何用-session-紀錄使用者狀態" class="headerlink" title="如何用 session 紀錄使用者狀態"></a>如何用 session 紀錄使用者狀態</h2><p>想像去飲料店點飲料，店員發給你號碼牌，之後你可以用號碼牌來領你的飲料。<br>你就是 client，飲料店就是 server，號碼牌就是 session id。</p>
-<p>換到真實的情境，server 端設定 session 開始後，會自動產生一個 session id。<br>這時候我們可以在 session 裡額外加上 user id。<br>接著在 response headers 會自動被加上下面內容，指示瀏覽器要存一個名為 PHPSESSID 的 cookie。</p>
-<p>response header<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: PHPSESSID=8afd28b38e013478f508473db0dfd172; path=/</span><br></pre></td></tr></table></figure></p>
-<p>之後 client 端每次向 server 請求時就會夾帶著 cookie。</p>
-<p>request header<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cookie: PHPSESSID=8afd28b38e013478f508473db0dfd172</span><br></pre></td></tr></table></figure></p>
-<p>server 端收到後就會根據 session id 來識別這是哪個 session 的請求，<br>這時候我們只要再看看 session 裡的 user id 就知道哪位 user 了。特別說明一下，中間 cookie 夾帶 session id 的傳遞都是背後會自動去執行的，server 和 client 都不用做額外的操作。</p>
-<p>缺點：</p>
-<ul>
-<li>session 過期前會一直佔用 server 資源<br><br></li>
-</ul>
-<h2 id="用-session-實作-login-amp-logout"><a href="#用-session-實作-login-amp-logout" class="headerlink" title="用 session 實作 login &amp; logout"></a>用 session 實作 login &amp; logout</h2><p>以下用 session 來實做一下使用者登入。</p>
-<p>Login form<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=<span class="string">""</span> method=<span class="string">"post"</span>&gt;</span><br><span class="line">    &lt;input type=<span class="string">"text"</span> name=<span class="string">"username"</span> placeholder=<span class="string">"Enter your username"</span> required&gt;</span><br><span class="line">    &lt;input type=<span class="string">"password"</span> name=<span class="string">"password"</span> placeholder=<span class="string">"Enter your password"</span> required&gt;</span><br><span class="line">    &lt;input type=<span class="string">"submit"</span> value=<span class="string">"Submit"</span>&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure></p>
-<p>Process Login<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( ! <span class="keyword">empty</span>( $_POST ) ) &#123;</span><br><span class="line">    <span class="keyword">if</span> ( <span class="keyword">isset</span>( $_POST[<span class="string">'username'</span>] ) &amp;&amp; <span class="keyword">isset</span>( $_POST[<span class="string">'password'</span>] ) ) &#123;</span><br><span class="line">        <span class="comment">// Getting submitted user data from database</span></span><br><span class="line">        $db = <span class="keyword">new</span> mysqli($db_host, $db_user, $db_pass, $db_name);</span><br><span class="line">        $sql = $db-&gt;prepare(<span class="string">"SELECT * FROM users WHERE username = ?"</span>);</span><br><span class="line">        $sql-&gt;bind_param(<span class="string">'s'</span>, $_POST[<span class="string">'username'</span>]);</span><br><span class="line">        $sql-&gt;execute();</span><br><span class="line">        $result = $sql-&gt;get_result();</span><br><span class="line">    	$user = $result-&gt;fetch_object();</span><br><span class="line">    		</span><br><span class="line">    	<span class="comment">// Verify user password and set $_SESSION</span></span><br><span class="line">    	<span class="keyword">if</span> ( password_verify( $_POST[<span class="string">'password'</span>], $user-&gt;password ) ) &#123;</span><br><span class="line">    		$_SESSION[<span class="string">'user_id'</span>] = $user-&gt;ID;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>Any protected page<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( <span class="keyword">isset</span>( $_SESSION[<span class="string">'user_id'</span>] ) ) &#123;</span><br><span class="line">    <span class="comment">// Get user data if session exists</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Redirect to the login page</span></span><br><span class="line">    header(<span class="string">"Location: https://www.yourdomain.com/login.php"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>Logout<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line">session_destroy();</span><br></pre></td></tr></table></figure></p>
-<p><br></p>
-<h2 id="如何用-cookie-based-session-紀錄使用者狀態"><a href="#如何用-cookie-based-session-紀錄使用者狀態" class="headerlink" title="如何用 cookie-based session 紀錄使用者狀態"></a>如何用 cookie-based session 紀錄使用者狀態</h2><p>紀錄使用者狀態也可以單純只使用 cookie，把 user 的身份和其他資訊都存在 cookie 裡，然後 server 就只看這個 cookie 去判斷你是誰。<br>當然儲存的資訊都會經過加密處理，但是還是有被破解的風險，而且 cookie 有儲存大小 4k 的限制，所以實務上有可能會 session 和 cookie-based session 配合使用。</p>
-<p>缺點：</p>
-<ul>
-<li>不適合存敏感資訊<br><br></li>
-</ul>
-<h2 id="再聊聊-persistent-cookie-amp-session-cookie"><a href="#再聊聊-persistent-cookie-amp-session-cookie" class="headerlink" title="再聊聊 persistent cookie &amp; session cookie"></a>再聊聊 persistent cookie &amp; session cookie</h2><p>概念上 cookie 又分成兩種：</p>
-<ul>
-<li><p>Persistent cookie</p>
-<p>  就是明確指定 cookie 的存活時間，直到指定的時間為止，即便瀏覽器關閉 cookie 依然活著。</p>
-  <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setcookie(<span class="string">"TestCookie"</span>, $value, time() + <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Session cookie </p>
-<p>  session cookie 則是相反，不指定存活時間，只活在這個瀏覽器的 session 期間，關閉瀏覽器後就被清除了。但是實測後發現如果在 chrome 上有勾選<code>繼續瀏覽上次開啟的網頁(Ｃontinue where you letf off)</code>，session cookie 是不會被清除的。<a href="https://stackoverflow.com/questions/10617954/chrome-doesnt-delete-session-cookies" target="_blank" rel="noopener">Ref</a><br><br></p>
-</li>
-</ul>
-<h2 id="比較一下-cookie-amp-local-storage-amp-session-storage"><a href="#比較一下-cookie-amp-local-storage-amp-session-storage" class="headerlink" title="比較一下 cookie &amp; local storage &amp; session storage"></a>比較一下 cookie &amp; local storage &amp; session storage</h2><p>HTML5 新增的兩種儲存方式： local storage &amp; session storage，下面把他們與 cookie 做一下比較。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Cookies</th>
-<th>Local Storage</th>
-<th>Session Storage</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Capacity</td>
-<td>4kb</td>
-<td>10mb</td>
-<td>5mb</td>
-</tr>
-<tr>
-<td>Browsers</td>
-<td>HTML4/HTML5</td>
-<td>HTML5</td>
-<td>HTML5</td>
-</tr>
-<tr>
-<td>Accessible from</td>
-<td>Any winodw</td>
-<td>Any winodw</td>
-<td>Same tab</td>
-</tr>
-<tr>
-<td>Expires</td>
-<td>Manually set</td>
-<td>Never</td>
-<td>On tab close</td>
-</tr>
-<tr>
-<td>Storage Location</td>
-<td>Browser and server</td>
-<td>Browser only</td>
-<td>Browser only</td>
-</tr>
-<tr>
-<td>Sent with requests</td>
-<td>Yes</td>
-<td>No</td>
-<td>No</td>
-</tr>
-<tr>
-<td>Restriction</td>
-<td>Same domain</td>
-<td>Same domain</td>
-<td>Same domain</td>
-</tr>
-</tbody>
-</table>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="http://fred-zone.blogspot.com/2014/01/web-session.html" target="_blank" rel="noopener">http://fred-zone.blogspot.com/2014/01/web-session.html</a><br><a href="https://www.johnmorrisonline.com/build-php-login-form-using-sessions/" target="_blank" rel="noopener">https://www.johnmorrisonline.com/build-php-login-form-using-sessions/</a><br><a href="https://www.youtube.com/watch?v=AwicscsvGLg" target="_blank" rel="noopener">https://www.youtube.com/watch?v=AwicscsvGLg</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="cjxevxj230008u4y5n6vshbh9" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/" data-id="cjxn8hsm300298ay5qnr0vquh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
@@ -729,7 +702,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
     </div>
   </div>
 
@@ -739,7 +712,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
     </div>
   </div>
 
@@ -748,7 +721,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -759,6 +732,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/">XSS 攻擊和防堵</a>
+          </li>
         
           <li>
             <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
@@ -774,10 +751,6 @@
         
           <li>
             <a href="/2019/06/24/least-knowledge-principle/">最小知識原則</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/24/liskov-substitution-principle/">里氏替換原則</a>
           </li>
         
       </ul>
