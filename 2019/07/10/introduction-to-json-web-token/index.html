@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>淺談 JWT (Json Web Token) | Yuchi 的學習筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言當服務開始龐大，server 開始 scale out，client 端每次的請求可能會交由不同的 server 處理，傳統的 session 模式必須解決 session consistency 的問題，常見的用法可以使用 Memcached 或是 Redis server 來管理。而 JWT 則提供了另一種身份認證的解決方案，有別於 session 具狀態性（Stateful）的形式，jw">
+<meta name="keywords" content="web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="淺談 JWT (Json Web Token)">
+<meta property="og:url" content="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/index.html">
+<meta property="og:site_name" content="Yuchi 的學習筆記">
+<meta property="og:description" content="前言當服務開始龐大，server 開始 scale out，client 端每次的請求可能會交由不同的 server 處理，傳統的 session 模式必須解決 session consistency 的問題，常見的用法可以使用 Memcached 或是 Redis server 來管理。而 JWT 則提供了另一種身份認證的解決方案，有別於 session 具狀態性（Stateful）的形式，jw">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://cdn.auth0.com/content/jwt/jwt-diagram.png">
+<meta property="og:updated_time" content="2019-07-10T13:50:51.216Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="淺談 JWT (Json Web Token)">
+<meta name="twitter:description" content="前言當服務開始龐大，server 開始 scale out，client 端每次的請求可能會交由不同的 server 處理，傳統的 session 模式必須解決 session consistency 的問題，常見的用法可以使用 Memcached 或是 Redis server 來管理。而 JWT 則提供了另一種身份認證的解決方案，有別於 session 具狀態性（Stateful）的形式，jw">
+<meta name="twitter:image" content="https://cdn.auth0.com/content/jwt/jwt-diagram.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Yuchi 的學習筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://yuchitung.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-introduction-to-json-web-token" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/07/10/introduction-to-json-web-token/" class="article-date">
+  <time datetime="2019-07-10T13:50:51.000Z" itemprop="datePublished">2019-07-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      淺談 JWT (Json Web Token)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>當服務開始龐大，server 開始 scale out，client 端每次的請求可能會交由不同的 server 處理，傳統的 session 模式必須解決 session consistency 的問題，常見的用法可以使用 Memcached 或是 Redis server 來管理。而 JWT 則提供了另一種身份認證的解決方案，有別於 session 具狀態性（Stateful）的形式，jwt 是無狀態的（Stateless），也就是不用考慮今天請求被分配到哪一台 server，根據隨著請求而來的 token ，server 就可以知道 client 是誰。 </p>
+<p>client 使用帳號密碼登入或是第三方登入，經 server 認證其身份，驗證成功後回傳一組 JWT 給 client，之後 client 在發起請求時都應夾帶這組 JWT 給 server 核查身份。過程中 server 都不用向資料庫發出查詢，也不用額外紀錄或是開啟 session，並且任何 server 拿到 token 都可以辨別其身份，過程如下圖:</p>
+<p><img src="https://cdn.auth0.com/content/jwt/jwt-diagram.png" alt="JWT 驗證流程"></p>
+<p>JWT 的組成分成3個部份：header、payload、signature，結構如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Header.Payload.Signature</span><br></pre></td></tr></table></figure>
+<h3 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h3><p>header 夾帶兩個資訊，一個是類型，這裡就是指 JWT，第二個為使用的演算法，如 HMAC、SHA256、RSA。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"alg"</span>: <span class="string">"HS256"</span>,</span><br><span class="line">  <span class="attr">"typ"</span>: <span class="string">"JWT"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然後將它用 base64 編碼，此為 JWT 的第一部份。</p>
+<h3 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h3><p>payload 用來存放需要傳遞的資料，<a href="https://tools.ietf.org/html/rfc7519#section-4.1" target="_blank" rel="noopener">RFC7519</a> 列有7個官方推薦的參數，但是這些為非必要項目，沒有也沒關係。</p>
+<table>
+<thead>
+<tr>
+<th>變量名</th>
+<th>英文全寫</th>
+<th>備註</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iss</td>
+<td>Issuer</td>
+<td>JWT 的核發者</td>
+</tr>
+<tr>
+<td>sub</td>
+<td>Subject</td>
+<td>JWT 的主體或者用戶</td>
+</tr>
+<tr>
+<td>aud</td>
+<td>Audience</td>
+<td>接收 JWT 的用戶</td>
+</tr>
+<tr>
+<td>exp</td>
+<td>Expiration</td>
+<td>Time    過期時間（單位為秒）</td>
+</tr>
+<tr>
+<td>nbf</td>
+<td>Not Before</td>
+<td>開始時間（單位為秒），在該時間之前無效</td>
+</tr>
+<tr>
+<td>iat</td>
+<td>Issued At</td>
+<td>發佈時間（單位為秒）</td>
+</tr>
+<tr>
+<td>jti</td>
+<td>JWT ID</td>
+<td>JWT唯一標識，區分不同發布者的統一的標識</td>
+</tr>
+</tbody>
+</table>
+<p>除此之外，也可以自己定義要夾帶的其他資訊，例如:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"sub"</span>: <span class="string">"1234567890"</span>,</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"John Doe"</span>,</span><br><span class="line">  <span class="attr">"admin"</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再來，一樣也是把 paylode 用 base64 編碼，此為 JWT 的第二個部份。</p>
+<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>第三個來做簽章(signature)，簽章的作用是確保傳來的資訊沒有被竄改。<br>作法是使用剛剛 <code>base64 後的 header</code> 以及 <code>base64 後的 payload</code> 和一個只有 server 才知道的 <code>secret</code> ，使用的演算法就是 header 裡面指定的演算法，作法如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HMACSHA256( base64UrlEncode(header) + &quot;.&quot; + base64UrlEncode(payload), secret)</span><br></pre></td></tr></table></figure>
+<p>最後把 header、payload、signature 用 <code>.</code>組起來，JWT 就完成了，可以直接來個<a href="https://jwt.io/" target="_blank" rel="noopener">線上測試</a>。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>client 發起請求的時候，header 需夾帶下面的資訊才能通過身份驗證。。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Authorization: Bearer &lt;token&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ul>
+<li>JWT 代表了一個人的認證身份，任何人拿到它都可以盜用其身份對 server 發出請求，故 token 應該安全保存，並且存活的有效期不應設太長，對於一些比較重要的應用應該要再驗證一次身份。</li>
+<li>任何人拿到 token 都可以解析 payload 的內容，除非有額外做加密處理，否則不應夾帶敏感資訊。</li>
+<li>一但核發出去的 token ，除非後端有額外的機制，否則無法註銷，只能等待其過期。</li>
+<li>根據上一點，故也無法實踐單點登入。</li>
+<li>應結合SSL使用。</li>
+<li>不要重複造輪子，善用官方建議的 <a href="https://jwt.io/" target="_blank" rel="noopener">Library</a>。</li>
+</ul>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>JWT 不是萬靈丹，有其優點也有其缺點，端看應用是否適合，並做好安全性的防護。<br>有關 JWT 的儲存方式各有各的說法，下次再開一篇新章討論。 </p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://jwt.io/introduction/" target="_blank" rel="noopener">Introduction to JSON Web Tokens</a><br><a href="http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html" target="_blank" rel="noopener">JSON Web Token 入門教程</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="cjxxaxeq2002a2ly56tu9bppd" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+    <section id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    </section>
+  
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">XSS 攻擊和防堵</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 15px;">web</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/07/10/introduction-to-json-web-token/">淺談 JWT (Json Web Token)</a>
+          </li>
+        
+          <li>
+            <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/">XSS 攻擊和防堵</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/24/interface-segregation-principle/">介面隔離原則</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Yuchi Tung<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'yuchi-blog';
+  
+  var disqus_url = 'https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

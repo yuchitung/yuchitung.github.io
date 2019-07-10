@@ -62,6 +62,80 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-mvc-and-mvvm" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/15/mvc-and-mvvm/" class="article-date">
+  <time datetime="2019-06-15T12:31:34.000Z" itemprop="datePublished">2019-06-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/15/mvc-and-mvvm/">淺談 MVC &amp; MVVM</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="為什麼要分層？"><a href="#為什麼要分層？" class="headerlink" title="為什麼要分層？"></a>為什麼要分層？</h2><p>實踐單一職責原則，將工作項拆分，各單元只專注在自己的工作上。<br>而前後端分離的概念更甚者把資料的提供與畫面的呈現完全拆分開來。</p>
+<h2 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h2><p>MVC 這個名字是來源自桌面應用程式的架構，而在 web 世界裡，其實 MVC 真正的名字應是叫做 Model2，但是因為同樣都有 model、controller、view 的結構，所以名字常被誤用，久而久之，大家也都習慣稱其為 MVC，以下內容也都以 MVC 稱呼之。</p>
+<p>MVC 是最基本且常見的分工架構，MVC 架構中將工作分成三層：</p>
+<ul>
+<li><p>Model:<br>負責與資料庫之間的聯繫，以及處理資料邏輯。</p>
+</li>
+<li><p>View:<br>負責視覺的呈現。</p>
+</li>
+<li><p>Controller:<br>在 view 與 model 之間的橋樑，屬於分配者或是控制者的角色。</p>
+</li>
+</ul>
+<p><img src="https://lh3.googleusercontent.com/3_mvHSPfMqe88SnmOLFaPpMhJnS71aDk0BjSSUQ2gwBNYMJa_JjFFIJ2P78CWB7nphzEyLx9fPo794UTnNmv23oz0Bbo4hX0RlG6zccKaAF36ijONad8abe1dIU3x-eBPiVd9dPs41HvmgyFSOKWFcgaF6w5ouJvVnZRj4invbFlqOPtrWoInw3s9jTptdv4-NbMahy-f_IXYvJLoulq-D5FMGB3jiw7p0fYNS558DIoazBNg0-eohrNHuRSzAiD_h6B89BF0G16J9oP4zfIhYzkOy6ZmXvTR0YWxnB4qrIMcl_z9Xtp-Vjmp2RezR7eOMBJxSpCxIvbn7xS_2XHSNp5zufJNbbS6inyj9oU-jqy8CQTRjd0ODRVoMfL4Fl_FuRJyBdDX7qqeDBEe1N3Kwen---XFPmbpCVC12vwM90yi1MrP1Y_73w_kLX3xn7MdrQtmCean3VFrSNOdG-aKk2kJbNk-BpTzAV-Q79VtFsJ34_2KDCy2YEoDIIMc_SWHbxk2go6W-uftauLdLY8yNIlN1EmLdNOjbhm_vpLGX-j8YP7FzaJLsGEhZg-2w_PJZNoldQk90jBFIg4TZlhR-z54EExqjpOuufJOiTQK_Qw0J1AIQS-1KtU-S2Vth5CFbYEQr5slKmcz5HMfVVrMA5lWGU_XZ5M=w1145-h955-no" width="50%"></p>
+<p><br></p>
+<h2 id="Server-side-render-下的-MVC"><a href="#Server-side-render-下的-MVC" class="headerlink" title="Server side render 下的 MVC"></a>Server side render 下的 MVC</h2><p>在 server side render 的架構下，整個網頁包含資料和視覺呈現都是在後端處理，瀏覽器只是顯示整份 html。</p>
+<p><img src="https://lh3.googleusercontent.com/dud2BZvQy6gTu55Au4v_f47cZXfpqgcJCkibutTDVZyPHb8RrFWcnb1CgtoOiUxNbLo4zrRtxCCjMniCmBDWREOcVZtkkBGAPnAeG4sK51GmqgZeFU22T_1djOp9h__Eg_nELYeDByb2U3bmsp8CVK_zRFl5FyS1SeFGS_f2ej8nNbPKRV_x5eqkPBIXM9BJtOjkZkZoxoaTMZigpqYY4bL-luROi-Fby_X2nWF9OHdtyjLz0gJRBEHIe0kQ9TLB8LrV9Fso8GsKGMsFZ66oxhTmW0fkoLdWKRBw2mT0E5iCB0DZg5gvaJKN_3XynM6g5yOeu0XkIc9LiL_gGlV44RL2MP1Jy0whjvdWKM1fLsKEy1GgDwol_Brg1Y-HVvPSCDNPTb5y5bNaSv3ZT5yYk92YCqHbRtApXmCY6_3HAWniI18C76BcWcZffGFeov2l1FgyvAtCv-WbaErG77cqHhGy1LKT2j_n7H0qnz6-6DWYDcQDtUh5Xt3mW9cOchJUgJrYkFV4t0aEMVvOG9N6MXRjGrNlvI3KM6z25BCa9JmZG8pzxuDSuOASO_aC8c7GP_CC6nwqTr0n9JnoZFDSGD5XEQpGWdlUcaOddsHoFTyexyYodom5sKFH2PlptpsPsP8CrqThtr6f5QJfCU3UmHrPcDyR8gvV=w2210-h924-no"></p>
+<p><br></p>
+<h2 id="Client-side-render-下的-MVC"><a href="#Client-side-render-下的-MVC" class="headerlink" title="Client side render 下的 MVC"></a>Client side render 下的 MVC</h2><p>現代的網頁為了讓使用者有更好的使用體驗，不要每個動作或是切換頁面都重新刷新整個頁面。誕生了client side render 的做法，一開始載入 document 時只是一個空的 html，所有的資料都是之後用動態載入，再埋入 html 裡面。</p>
+<p>可以看到，這樣的架構下，server 是不處理有關 view 呈現的工作，都是交由前端在瀏覽器完成。而圖中那個 view 區塊事實上是可以進一步拆成前端的 MVC 或是 MVVM。<br><img src="https://lh3.googleusercontent.com/gh3hpwEP9ktXgaDdsE9eZRn-EGm8atYMkQo0b_5vSVS9Mxai13h98qC4JAcZUjsEVFsuP3FlzD1Hf_t5I1eX4WjX3EUuKHa9s1Bf7tO_oT63yXVaNvz9umLLMLpaY0jnt1YN5D47_ua3CsOuiT72nf6wFgV_UUs3Hnbtl6M93wdSUtb2gPOz6QPUSqO1AZHtwXlraKQB58RapG3a0psO5o2_h4gH_yeewuK6Z6u9z0YkO1epVlrpB5kTY5RsbNYW44udMR5vJ5AesSX-WCnV6EzJzDcvTx_iXozKTl6aBDiCVSaXOym9PbDnE1NVkJzTX8sNeKRCZOpo45w0tnId7zavsbaZZRIeQBkS1yKb94p7773yYWppEn_HXsp0PFYmtwpoXffLayN5psa-cGeVYE6PtJa0-p4Rj8PBZ2AV2t_K2SzPKApXPz9vQTgyUdqbmstv1wonbfg3RzzOBvft3z8q3lkzoWYiaoTbp20YJyMNHYgN6LT19BT6KEzv_W7PPIcfT5NVsyoLjONzaRjVQqmuhPuDN2OwWmqXSXyGJ5nP8XZDM4N7lYzlktH4FYKuS_69MqgG-zGmte0y2j-eJkapLy6fJrVJNOZ1uDBAHtf-G9MZioM2SKxqMBbuLLl9mXzwjOwaVSMre21ogkI_SMfTN4RiWUZ-=w2210-h1306-no"></p>
+<p><br></p>
+<h2 id="前後端大亂鬥"><a href="#前後端大亂鬥" class="headerlink" title="前後端大亂鬥"></a>前後端大亂鬥</h2><p>來看看，把前後端整合起來，會長怎樣呢？</p>
+<p><img src="https://lh3.googleusercontent.com/O3i0ebnnsTPESDGul3vKXGvZ6OF4sumgNW1P163Timl0xVFv91oISZGLczUjJ3ASqbBRBek6Phd94hFhjvqAYncAGiJSrZB2q9c3shzPHfR0JqneAmyTWovnnN92-tPT0Viv_ToVHW3vWXA-Aue6eoqFjbLnJ1S3qfuqrkdHzL5-VT4doR9gLNeYumxNf7EKymMVNX_mYxHR2vADLpCboga4bIrW2cn1tgHlER1S6c5sRaeSGo4VdW8HrHJoeCy8RbvDI4eZDCLjbi9QY1mTBQWhMeDRb2VaBU4V7y4_zIEtMNIy8BGcIbnct1R3ctkeTHJcxRJbFvg_y_BGg_RBZLqiQxy3lesQNRk-J_YX32pbFnwv4IrzrA5NyrJYyIjQ9nb9vRxSoVy5bsqNM_pwMqJqtnwTtnVTM9lQ7hsKwN0mMFEwK2Cax0qXl5NUsVWcvfpiE-lpUzNjpj6RQrz4p5CcL8fH0XzMw90zODwUN42KLJ43d9oaMIeUH8bIT1wXPmxwzOdb9uap1PyGajPnpOPmB9hQNswK_mt9ftO4qZb6uqdkFNN1nLcyS_7tfOu4_RHK5ZqcszN36MVSWOzKE367I-_wmMk6-qcWRZRsScyxjNpRaJv9Zih4Jn2ASGH3yKZRoLCE7HwYU8HCxzLeUnqMO-QEanmu=w1264-h1544-no"></p>
+<h2 id="MMVM"><a href="#MMVM" class="headerlink" title="MMVM"></a>MMVM</h2><p>基於前端需求所發展出的架構。<br>分層如下：</p>
+<ul>
+<li>Model:<br>通常是與 server 介接取得資料，或是處理 client 端預先載入的資料。</li>
+<li><p>View:<br>負責視覺的呈現。</p>
+</li>
+<li><p>View-model:<br>在 view 與 view-model 之間的橋樑，達成資料雙向綁定的效果。當 view 有動作被觸發，會自動更新 model，model 有資料更新也會自動更新 view。由於實現了雙向綁定，view-model的內容會即時呈現在 view 層，前端開發者再也不必繁複地通過 js 或是 jQuery 操縱 DOM 去更新 view，而 view 和 model 也就此解耦合，前端的工作分工更為乾淨。常見使用 MVVM 的框架有 angular, vue。<br><img src="https://lh3.googleusercontent.com/r6Wno2Ph5aXFBVUuWCa5XpYfWPnoSFh3Kj8dKafx5iLjUReDWvJUVpEKvVoDBJYCPfreEB6q3BHMPltkQyRIz4DkwgYUlnj0iDUq2HrNd7ixah6llcVAq10C3yQoZEBmiw8-EvsW18CC45IGLUCDLZwQJofEAJHJVpDal7n7cQkqL5NcaZsNPcc_47LSNljuzl56qZ-lNgcG2-hKGSt4ghQcOwnXfXYGtyXno-lDWF9uLjqH3qLnRdKCRSLpyh7M5N7pefhMKK6XZ7ZLEZJU57Ni5rEINqjfdMQbT9u2SqT0pNgzRaPZzet2Efaq3UAk_4RC3pwJa8i_KJuBGfUccqdOB12G-9k6-y_Xn1XncYxlieQvjTWNwaysWneRnJVZL4U_2LtHHa-DKnDqmP8Ln7NVqWwfluBWX0j9WoD91NnbtbKgrEcSEDj29NkNSY4nCc9B4ln0C7HBOkn-KPvn-da1njuHieDuap5sKytLveu2G4_NIgFD5BU8iRKUoKSaS8rrQez60Us_ivRMd7KMADz5kzcnhhEScBEx5GTskBLP-4syOUFQjN67uR3lyM84AHNUhZnsiXSgt-1-F9xQQ2i1pmHdoJHTaTBPQODdjTwRENfmLbYMtZVKL1EqxZiy_EzgcUdloPfuIQS8CJltVeXMf2Z5JZeF=w1145-h960-no" width="50%"></p>
+</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://www.ithome.com.tw/node/77330" target="_blank" rel="noopener">MVC與Model 2的變異與結合</a></p>
+<p><a href="https://blog.techbridge.cc/2017/09/16/frontend-backend-mvc/" target="_blank" rel="noopener">前後端分離與 SPA</a></p>
+<p><a href="http://www.syscom.com.tw/ePaper_New_Content.aspx?id=498&amp;EPID=219&amp;TableName=sgEPArticle" target="_blank" rel="noopener">淺談MVVM架構</a></p>
+<p><a href="https://draveness.me/mvx" target="_blank" rel="noopener">淺談MVC、MVP 和MVVM 架構模式</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/" data-id="cjxxaxeq4002g2ly5txa8fg2w" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+  
+</article>
+
+
+  
     <article id="post-identify-users-with-cookie-and-session" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/15/identify-users-with-cookie-and-session/" class="article-date">
@@ -177,7 +251,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="cjxonfkdf0021c8y5lf96xog2" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="cjxxaxeqc00302ly53ageysrv" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -267,7 +341,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="cjxonfkdb001qc8y5sjntot32" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="cjxxaxepx001y2ly5pd2ut9wi" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/08/crontab-setting/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -312,7 +386,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" data-id="cjxonfkdr002qc8y5wwuq1udo" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" data-id="cjxxaxeqa002x2ly50xflt3js" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -363,7 +437,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/" data-id="cjxonfkdl002ec8y5rc3bng1e" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/" data-id="cjxxaxeq6002l2ly52qhx7024" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -554,7 +628,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="cjxonfkdp002lc8y5v3yd6lrx" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="cjxxaxeqa002v2ly5oh96wv53" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/04/useful-git-command/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -696,7 +770,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="cjxonfkek004gc8y5xsy2yjc6" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="cjxxaxeqz004l2ly59mccpv9k" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/03/laravel-api/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -806,7 +880,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="cjxonfkdf001zc8y5if70yhis" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="cjxxaxeq000262ly5ee4m83vy" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -867,7 +941,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="cjxonfkdo002jc8y5kpu3pbk7" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="cjxxaxeq8002q2ly5sqt1hsas" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/03/02/singleton/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -932,6 +1006,10 @@
       <ul>
         
           <li>
+            <a href="/2019/07/10/introduction-to-json-web-token/">淺談 JWT (Json Web Token)</a>
+          </li>
+        
+          <li>
             <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/">XSS 攻擊和防堵</a>
           </li>
         
@@ -945,10 +1023,6 @@
         
           <li>
             <a href="/2019/06/24/interface-segregation-principle/">介面隔離原則</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/24/least-knowledge-principle/">最小知識原則</a>
           </li>
         
       </ul>
