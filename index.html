@@ -142,7 +142,7 @@
 <p>除此之外，也可以自己定義要夾帶的其他資訊，例如:</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"sub"</span>: <span class="string">"1234567890"</span>,</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"John Doe"</span>,</span><br><span class="line">  <span class="attr">"admin"</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>再來，一樣也是把 paylode 用 base64 編碼，此為 JWT 的第二個部份。</p>
-<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>第三個來做簽章(signature)，簽章的作用是確保傳來的資訊沒有被竄改。<br>作法是使用剛剛 <code>base64 後的 header</code> 以及 <code>base64 後的 payload</code> 和一個只有 server 才知道的 <code>secret</code> ，使用的演算法就是 header 裡面指定的演算法，作法如下:</p>
+<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>第三個來做簽章(signature)，簽章是 JWT 的核心，是為了避免有人更改 payload ，偽造身份發出請求，。除非 secret 外洩，否則偽造者無法做出合法的簽章。作法是使用剛剛 <code>base64 後的 header</code> 以及 <code>base64 後的 payload</code> 和一個只有 server 才知道的 <code>secret</code> ，使用的演算法就是 header 裡面指定的演算法，作法如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HMACSHA256( base64UrlEncode(header) + &quot;.&quot; + base64UrlEncode(payload), secret)</span><br></pre></td></tr></table></figure>
 <p>最後把 header、payload、signature 用 <code>.</code>組起來，JWT 就完成了，可以直接來個<a href="https://jwt.io/" target="_blank" rel="noopener">線上測試</a>。</p>
 <h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>client 發起請求的時候，header 需夾帶下面的資訊才能通過身份驗證。。</p>
@@ -161,7 +161,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="cjxxaxeq2002a2ly56tu9bppd" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="cjy325f8o0025iuy5tb26wbla" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -264,7 +264,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="cjxxaxeqc00312ly51wqvz1vv" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="cjy325f8y002yiuy5yd5npcpv" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -331,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="cjxxaxepy00212ly5e6asz0j7" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="cjy325f8n0023iuy5j5rn9oth" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -388,7 +388,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="cjxxaxepz00232ly5wtjtndg3" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="cjy325f8m0022iuy5a03qni2g" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -446,7 +446,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="cjxxaxeq100282ly56ov2tvxr" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="cjy325f8p0027iuy5k0vmjqfw" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -501,7 +501,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="cjxxaxeq2002b2ly5w0e9xv4t" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="cjy325f8r002ciuy5uzpsdqit" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -561,7 +561,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="cjxxaxeq3002e2ly530a5ce6e" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="cjy325f910033iuy5b5p5g3i1" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -627,7 +627,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="cjxxaxeq5002j2ly57d2pjavo" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="cjy325f8s002hiuy5wql6i56p" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/open-closed-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -687,7 +687,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="cjxxaxeq7002o2ly5335hxy3r" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="cjy325f8t002kiuy5l1lpq9zj" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -739,7 +739,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="cjxxaxeq9002t2ly5awskjzdd" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="cjy325f8y002wiuy5fkpl91p9" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/solid/#disqus_thread" class="article-comment-link">Comments</a>
       
