@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>20191019 ⟪為遺留代碼寫單元測試⟫ 上課筆記 | Yuchi 的學習筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="觀念 不要需求沒講完就開始寫，不要需求講完沒確認就開始寫 一次只測試一件事，不一定是指一個 assertion，看定義 不要用 if、for、switch、try catch，測試裡面不應該再有邏輯 test name 應該是敘述情境 測試可以反應主程式是否有壞味道，是否有高耦合… unit test 要先有 CI 不然沒有價值 data-driven test： 用情境切分測試，不要用 data">
+<meta name="keywords" content="test,note,課程筆記">
+<meta property="og:type" content="article">
+<meta property="og:title" content="20191019 ⟪為遺留代碼寫單元測試⟫ 上課筆記">
+<meta property="og:url" content="https://yuchitung.github.io/2019/11/02/20191019-class-note-writing-unit-test-for-legacy-code/index.html">
+<meta property="og:site_name" content="Yuchi 的學習筆記">
+<meta property="og:description" content="觀念 不要需求沒講完就開始寫，不要需求講完沒確認就開始寫 一次只測試一件事，不一定是指一個 assertion，看定義 不要用 if、for、switch、try catch，測試裡面不應該再有邏輯 test name 應該是敘述情境 測試可以反應主程式是否有壞味道，是否有高耦合… unit test 要先有 CI 不然沒有價值 data-driven test： 用情境切分測試，不要用 data">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-11-02T07:08:12.681Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="20191019 ⟪為遺留代碼寫單元測試⟫ 上課筆記">
+<meta name="twitter:description" content="觀念 不要需求沒講完就開始寫，不要需求講完沒確認就開始寫 一次只測試一件事，不一定是指一個 assertion，看定義 不要用 if、for、switch、try catch，測試裡面不應該再有邏輯 test name 應該是敘述情境 測試可以反應主程式是否有壞味道，是否有高耦合… unit test 要先有 CI 不然沒有價值 data-driven test： 用情境切分測試，不要用 data">
+  
+    <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Yuchi 的學習筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://yuchitung.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-20191019-class-note-writing-unit-test-for-legacy-code" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/11/02/20191019-class-note-writing-unit-test-for-legacy-code/" class="article-date">
+  <time datetime="2019-11-02T07:03:17.000Z" itemprop="datePublished">2019-11-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      20191019 ⟪為遺留代碼寫單元測試⟫ 上課筆記
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="觀念"><a href="#觀念" class="headerlink" title="觀念"></a>觀念</h1><ul>
+<li>不要需求沒講完就開始寫，不要需求講完沒確認就開始寫</li>
+<li>一次只測試一件事，不一定是指一個 assertion，看定義</li>
+<li>不要用 if、for、switch、try catch，測試裡面不應該再有邏輯</li>
+<li>test name 應該是敘述情境</li>
+<li>測試可以反應主程式是否有壞味道，是否有高耦合…</li>
+<li>unit test 要先有 CI 不然沒有價值</li>
+<li>data-driven test： 用情境切分測試，不要用 data provider 把所有情境都合併在一起</li>
+</ul>
+<p>data provider<br>優點：快速<br>缺點：因為 code 不會 duplicate 所以不會重構測試程式，當情境越來越多，data provider case 越多，若這時候還是綠燈 ，就會累積很多可能是不同情境的測試，導致測試程式不易理解與修改，接著測試就開始變髒了，就沒有人繼續寫測試了</p>
+<h1 id="如何導入"><a href="#如何導入" class="headerlink" title="如何導入"></a>如何導入</h1><p>理想：<br>不寫測試就不 code review，不 review 就不上線<br>現實：  </p>
+<ul>
+<li>透過一點 over-design 穩固 code 和 test，例如強制寫 interface 然後禁止用 new</li>
+<li>code review 前先看測試，修 ticket 要附帶測試，code coverage 只能往上不能下降</li>
+</ul>
+<p>constructor 若是需要注入的參數很多 可能是違反單一職責原則</p>
+<h1 id="Assertion-package-的好處"><a href="#Assertion-package-的好處" class="headerlink" title="Assertion package 的好處"></a>Assertion package 的好處</h1><ul>
+<li>可以比較物件</li>
+<li>可以比較集合</li>
+<li>表達力增加</li>
+<li>節省時間</li>
+<li>減少錯誤可能</li>
+</ul>
+<h1 id="測試的表述方式"><a href="#測試的表述方式" class="headerlink" title="測試的表述方式"></a>測試的表述方式</h1><p>寫測試是<code>說明情境</code>，而不是在測 function，需求的關鍵字應該出現在裡面，並且其餘的都不應該出現</p>
+<h2 id="做法："><a href="#做法：" class="headerlink" title="做法："></a>做法：</h2><p>把共用的 function 抽出去，並用其組出情境<br>常用的 function 命名</p>
+<ul>
+<li>given </li>
+<li>when </li>
+<li>then </li>
+<li>should</li>
+</ul>
+<h1 id="案例一：-Isolated-test"><a href="#案例一：-Isolated-test" class="headerlink" title="案例一： Isolated test"></a>案例一： Isolated test</h1><p>找到依賴， extract 它，然後建立一個 SUT 測試子類 override 依賴函式，此為手動做出假物件來隔絕依賴<br>(參考 extract &amp; override 單元測試的藝術 ch3、ch4)</p>
+<h2 id="解法："><a href="#解法：" class="headerlink" title="解法："></a>解法：</h2><h3 id="SUT"><a href="#SUT" class="headerlink" title="SUT"></a>SUT</h3><p>steps</p>
+<ul>
+<li>找出依賴</li>
+<li>extract method of dependency</li>
+<li>private -&gt; protected</li>
+</ul>
+<h3 id="SUT-測試子類"><a href="#SUT-測試子類" class="headerlink" title="SUT 測試子類"></a>SUT 測試子類</h3><p>steps</p>
+<ul>
+<li>建立一個 SUT 測試子類</li>
+<li>ovrerride 有 dependency 的 function</li>
+<li>決定子類的值</li>
+</ul>
+<h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><p>static &amp; 不能繼承的地方不能用</p>
+<h2 id="副作用："><a href="#副作用：" class="headerlink" title="副作用："></a>副作用：</h2><p>被抽出的 production code 測試不會測到(因為測試會跑到 SUT 子類的 override function) -&gt; code coverage 會掉</p>
+<h1 id="案例二：-依賴注入-＆-依賴反轉-IOC-DI"><a href="#案例二：-依賴注入-＆-依賴反轉-IOC-DI" class="headerlink" title="案例二： 依賴注入 ＆ 依賴反轉 (IOC = DI)"></a>案例二： 依賴注入 ＆ 依賴反轉 (IOC = DI)</h1><p>SUT 重構 steps</p>
+<ul>
+<li>抽出依賴成 field</li>
+<li>建立 interface</li>
+<li>初始化放到 constructor</li>
+<li>外部注入依賴</li>
+</ul>
+<p>修改好的好處：</p>
+<ol>
+<li>production 可以從高耦合變成低耦合，並且舊有的無參數和新的有參數寫法都不會有問題</li>
+<li>可以開始測試</li>
+</ol>
+<p>重點：<br>把依賴交由外部決定，SUT 專注業務邏輯，這樣測試才會變得可行</p>
+<p>補充：<br>做假的粒越小，測試程式越好理解，所以如果做假整個工廠，程式會必較不好讀</p>
+<h1 id="案例二改用-mock-lib-實作"><a href="#案例二改用-mock-lib-實作" class="headerlink" title="案例二改用 mock lib 實作"></a>案例二改用 mock lib 實作</h1><ul>
+<li>mock 背後也是 new instance ， 等同於手刻 fake class</li>
+<li>production code 除了 DTO、factory，都不要 new ，一律做DI，而且用 interface</li>
+</ul>
+<h1 id="案例三：-需求異動-登入失敗紀錄-log"><a href="#案例三：-需求異動-登入失敗紀錄-log" class="headerlink" title="案例三： 需求異動:登入失敗紀錄 log"></a>案例三： 需求異動:登入失敗紀錄 log</h1><h2 id="單元測試三種方式"><a href="#單元測試三種方式" class="headerlink" title="單元測試三種方式"></a>單元測試三種方式</h2><ul>
+<li>驗回傳值</li>
+<li>驗狀態<br>老師打學生，學生被打不開心（狀態改變），但不說（沒有回傳值）</li>
+<li>驗相依物件互動<br>目標 function 有沒有被呼叫</li>
+</ul>
+<h2 id="注意測試壞味道"><a href="#注意測試壞味道" class="headerlink" title="注意測試壞味道"></a>注意測試壞味道</h2><ul>
+<li>過度指定（測試太敏感不穩固）</li>
+</ul>
+<p>mock 驗證可以不驗到太細 例如 log message 只要驗到有沒有互動<br>但是如果有遇到 bug 可以再加上去</p>
+<h2 id="Spy-and-Mock"><a href="#Spy-and-Mock" class="headerlink" title="Spy and Mock"></a>Spy and Mock</h2><h3 id="Spy"><a href="#Spy" class="headerlink" title="Spy"></a>Spy</h3><ul>
+<li>spy 為後置驗證，做完才驗證，接近 3A 原則 </li>
+<li>只驗證在乎的事情， 其他沒驗的東西無所謂</li>
+<li>測試比較沒那麼敏感，必較不容易壞</li>
+</ul>
+<h3 id="Mock"><a href="#Mock" class="headerlink" title="Mock"></a>Mock</h3><ul>
+<li>act 前先下定義，先設定白名單</li>
+<li>如果有<code>任何</code>跟定義不同的情況就會噴錯</li>
+<li>比spy 嚴格的驗證方式</li>
+</ul>
+<p>note:<br>php spy 沒有 should not receive 的寫法</p>
+<h2 id="使用-makePartial"><a href="#使用-makePartial" class="headerlink" title="使用 makePartial"></a>使用 makePartial</h2><p> 就像是經過一個 wrapper (可以看成 decorator)</p>
+<h1 id="測試方向"><a href="#測試方向" class="headerlink" title="測試方向"></a>測試方向</h1><p>developer:輔助開發</p>
+<p>QA:測邊界值以及各種情況</p>
+<h1 id="變異測試"><a href="#變異測試" class="headerlink" title="變異測試"></a>變異測試</h1><p>production code 有任何異動，測試都應該不過， 如果沒有紅燈代表測試不夠完整</p>
+<h1 id="Code-coverage"><a href="#Code-coverage" class="headerlink" title="Code coverage"></a>Code coverage</h1><ul>
+<li>production code 95% 可能都不是主要核心 -&gt; 無法貢獻 coverage -&gt; 數字不好看</li>
+<li>5% 核心才是重要的，有測試價值的</li>
+</ul>
+<h2 id="coverage-report-可以看出差異：刺激思考"><a href="#coverage-report-可以看出差異：刺激思考" class="headerlink" title="coverage report 可以看出差異：刺激思考"></a>coverage report 可以看出差異：刺激思考</h2><ul>
+<li>可能是 test case 不足</li>
+<li>可能是 dead code</li>
+</ul>
+<p>結論：不要拿 code coverage 當 KPI</p>
+<h1 id="沒事不要把舊-code-重構以及寫測試"><a href="#沒事不要把舊-code-重構以及寫測試" class="headerlink" title="沒事不要把舊 code 重構以及寫測試"></a>沒事不要把舊 code 重構以及寫測試</h1><ul>
+<li><p>因為改完後沒有資源人力和各種情境去測試改完的 code，所以是危險的</p>
+</li>
+<li><p>適合的改動時間為 fix 和異動時加上測試，這樣才會有各種 code review、 pair programming 、 e2e test 、 manual test、、UAT test、回歸測試以及其他測試的保護</p>
+</li>
+<li>不要開重構 task 異動時才一起做重構和加上測試</li>
+</ul>
+<p>寫測試是買保險，買保險是需要付出代價的<br>應該投資在最有價值是的，例如</p>
+<ul>
+<li>$、人命</li>
+<li>維護成本很高、很常壞掉的東西 -&gt; 每次有需求異動都會改到而且很容易改錯的程式</li>
+<li>常用的功能、共用元件</li>
+<li><strong>bug</strong> 、ticket、issue</li>
+</ul>
+<p>相對趨勢 &gt; 絕對數字 -&gt; 從今天開始只為自己現在開始寫的 code 寫測試 -&gt; coverage 會慢慢上升</p>
+<h1 id="三層式設計（onion-架構）"><a href="#三層式設計（onion-架構）" class="headerlink" title="三層式設計（onion 架構）"></a>三層式設計（onion 架構）</h1><p>UI <-> business service <-> data</-></-></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">core</th>
+<th style="text-align:center"><-></-></th>
+<th style="text-align:center">adapter</th>
+<th style="text-align:center"><-></-></th>
+<th style="text-align:center">3rd party service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">unittest</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">整合測試</td>
+</tr>
+</tbody>
+</table>
+<p>production 實作<br>戳 adapter 看跟第三方是否有通</p>
+<p>案例：<br>googel login 不通<br>production 登入不通三分鐘內跟 3rd party 通知 </p>
+<p>e2e<br>ec: 加到購物車、結帳<br>博弈：下注</p>
+<h1 id="stored-procedure-amp-repository"><a href="#stored-procedure-amp-repository" class="headerlink" title="stored procedure &amp; repository"></a>stored procedure &amp; repository</h1><ul>
+<li>當成黑箱測試</li>
+<li>直接 test db  </li>
+<li>test 裡面做 arrange &amp; assert 都是 ORM去做</li>
+<li>只要測試前 arrange，然後驗證修改完的結果 </li>
+</ul>
+<h1 id="如何測試-legacy-嚴重的-code"><a href="#如何測試-legacy-嚴重的-code" class="headerlink" title="如何測試 legacy 嚴重的 code"></a>如何測試 legacy 嚴重的 code</h1><p>先確認需求和情境寫出一個 test case -&gt; 紅燈 -&gt; 找到依賴 切掉它 -&gt; 反覆直到綠燈</p>
+<p>重要：不要先看程式碼，只要看方法簽章就好了，這樣只會先為核心代碼寫測試 </p>
+<h1 id="其他問題："><a href="#其他問題：" class="headerlink" title="其他問題："></a>其他問題：</h1><ul>
+<li>如何知道測試是否足夠了</li>
+<li>CRUD 要不要測試？</li>
+<li>live template 極速開發</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/11/02/20191019-class-note-writing-unit-test-for-legacy-code/" data-id="ck2h868wn0027x1y52q6dw7jm" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2019/11/02/20191019-class-note-writing-unit-test-for-legacy-code/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/note/">note</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/test/">test</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/課程筆記/">課程筆記</a></li></ul>
+
+    </footer>
+  </div>
+  
+    <section id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    </section>
+  
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/07/14/where-to-store-json-web-token/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">JWT 到底要存哪裡？</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/課程筆記/">課程筆記</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/note/" style="font-size: 10px;">note</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/test/" style="font-size: 10px;">test</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a> <a href="/tags/課程筆記/" style="font-size: 10px;">課程筆記</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/11/02/20191019-class-note-writing-unit-test-for-legacy-code/">20191019 ⟪為遺留代碼寫單元測試⟫ 上課筆記</a>
+          </li>
+        
+          <li>
+            <a href="/2019/07/14/where-to-store-json-web-token/">JWT 到底要存哪裡？</a>
+          </li>
+        
+          <li>
+            <a href="/2019/07/10/introduction-to-json-web-token/">淺談 JWT (Json Web Token)</a>
+          </li>
+        
+          <li>
+            <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/">XSS 攻擊和防堵</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Yuchi Tung<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'yuchi-blog';
+  
+  var disqus_url = 'https://yuchitung.github.io/2019/11/02/20191019-class-note-writing-unit-test-for-legacy-code/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
