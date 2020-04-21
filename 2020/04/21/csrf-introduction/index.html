@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Yuchi 的學習筆記">
 <meta property="og:description" content="CSRF 是什麼？CSRF(Cross Site Request Forgery) 為跨站請求偽造。簡單講，被害者點擊了攻擊者提供的網頁後，網頁裡面埋了一些惡意的程式碼，目的為假冒被害者的身份去對目標網站發出請求，請求可以是刪除資源或是轉帳等動作，通常是發生在目標網站使用 cookie 做身份認證的情況，利用 cookie 會隨著請求一起被送出的特性來達到攻擊的效果。 解法 SameSite co">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-04-21T11:11:03.505Z">
+<meta property="og:updated_time" content="2020-04-21T11:16:34.899Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CSRF 介紹">
 <meta name="twitter:description" content="CSRF 是什麼？CSRF(Cross Site Request Forgery) 為跨站請求偽造。簡單講，被害者點擊了攻擊者提供的網頁後，網頁裡面埋了一些惡意的程式碼，目的為假冒被害者的身份去對目標網站發出請求，請求可以是刪除資源或是轉帳等動作，通常是發生在目標網站使用 cookie 做身份認證的情況，利用 cookie 會隨著請求一起被送出的特性來達到攻擊的效果。 解法 SameSite co">
@@ -105,8 +105,14 @@
 <ul>
 <li>設定兩種類型的 cookie<br>把 cookie 分成兩種，一種是維持登入狀態用的 cookie，不設為 SameSite，讓點擊連結進入網站時仍然對 server 發送 cookie，讓使用者保持登入狀態;<br>另一種是敏感操作時候用的 cookie，要設為 SameSite，避免偽造請求的攻擊。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: session_id=zxcvbn19rtyu89 </span><br><span class="line">Set-Cookie: name=secret; SameSite</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">- 使用 Lax &amp; Strict</span><br><span class="line">先簡單介紹一下 SameSite 的幾種設定：Strict、Lax、None。</span><br><span class="line"></span><br><span class="line">Strict：要求最嚴格，只有 same site 的情況下，才會送出 cookie。</span><br><span class="line">Lax：比 Strict 寬鬆一點，除了 GET 請求以外，不發送 cookie 到第三方。</span><br><span class="line">None： 允許所有網站對 cookie 的存取。</span><br><span class="line"></span><br><span class="line">所以我們可以使用 SameSite=Lax，讓 POST、PUT、DELETE 請求在跨域的情況下不發送 cookie，避免 CSRF 攻擊，又可以在透過點擊連結進入網站時保持登入狀態。</span><br></pre></td></tr></table></figure>
-<p>Set-Cookie: session_id=zxcvbn19rtyu89; SameSite=Lax<br><code>`</code><br>詳細的細節可以看看 <a href="https://tools.ietf.org/html/draft-west-first-party-cookies-07" target="_blank" rel="noopener">RFC 對於 SameSite cookie 的規範</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: session_id=zxcvbn19rtyu89 </span><br><span class="line">Set-Cookie: name=secret; SameSite</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 Lax &amp; Strict<br>先簡單介紹一下 SameSite 的幾種設定：Strict、Lax、None。</li>
+</ul>
+<p>Strict：要求最嚴格，只有 same site 的情況下，才會送出 cookie。<br>Lax：比 Strict 寬鬆一點，除了 GET 請求以外，不發送 cookie 到第三方。<br>None： 允許所有網站對 cookie 的存取。</p>
+<p>所以我們可以使用 SameSite=Lax，讓 POST、PUT、DELETE 請求在跨域的情況下不發送 cookie，避免 CSRF 攻擊，又可以在透過點擊連結進入網站時保持登入狀態。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: session_id=zxcvbn19rtyu89; SameSite=Lax</span><br></pre></td></tr></table></figure>
+<p>詳細的細節可以看看 <a href="https://tools.ietf.org/html/draft-west-first-party-cookies-07" target="_blank" rel="noopener">RFC 對於 SameSite cookie 的規範</a></p>
 <h3 id="Referer"><a href="#Referer" class="headerlink" title="Referer"></a>Referer</h3><p>檢查 request header 的 referer，看 domian 是否合法來避掉偽造請求。<br>但是有風險：</p>
 <ul>
 <li>瀏覽器可能不支援</li>
@@ -127,7 +133,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ck99ta6gw003rmoy567o7wi9k" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ck99tcbbr0000pwy5w9pqnzbz" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
