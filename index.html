@@ -62,6 +62,83 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-csrf-introduction" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/21/csrf-introduction/" class="article-date">
+  <time datetime="2020-04-21T11:11:03.000Z" itemprop="datePublished">2020-04-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="CSRF-是什麼？"><a href="#CSRF-是什麼？" class="headerlink" title="CSRF 是什麼？"></a>CSRF 是什麼？</h2><p>CSRF(Cross Site Request Forgery) 為跨站請求偽造。簡單講，被害者點擊了攻擊者提供的網頁後，網頁裡面埋了一些惡意的程式碼，<br>目的為假冒被害者的身份去對目標網站發出請求，請求可以是刪除資源或是轉帳等動作，通常是發生在目標網站使用 cookie 做身份認證的情況，利用 cookie 會隨著請求一起被送出的特性來達到攻擊的效果。</p>
+<h2 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h2><ul>
+<li>SameSite cookie</li>
+<li>Referer</li>
+<li>CSRF Token</li>
+<li>Double Submit Cookie</li>
+</ul>
+<h3 id="SameSite-cookie"><a href="#SameSite-cookie" class="headerlink" title="SameSite cookie"></a>SameSite cookie</h3><p>此做法是在 server 設定 cookie 時，加上 SameSite 設定，表示只有在同網站的情況下瀏覽器才隨請求發送 cookie 給 server。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: session_id=zxcvbn19rtyu89; SameSite</span><br></pre></td></tr></table></figure>
+<p>但是有幾個缺點：</p>
+<ul>
+<li>不是所有瀏覽器版本都支援，使用前須先確認</li>
+<li>對於如果是從 Google 搜尋頁或是別人分享的連結來點擊進入網頁，會無法保持登入的效果，對使用者體驗不利</li>
+</ul>
+<p>解法有兩種：</p>
+<ul>
+<li>設定兩種類型的 cookie<br>把 cookie 分成兩種，一種是維持登入狀態用的 cookie，不設為 SameSite，讓點擊連結進入網站時仍然對 server 發送 cookie，讓使用者保持登入狀態;<br>另一種是敏感操作時候用的 cookie，要設為 SameSite，避免偽造請求的攻擊。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: session_id=zxcvbn19rtyu89 </span><br><span class="line">Set-Cookie: name=secret; SameSite</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">- 使用 Lax &amp; Strict</span><br><span class="line">先簡單介紹一下 SameSite 的幾種設定：Strict、Lax、None。</span><br><span class="line"></span><br><span class="line">Strict：要求最嚴格，只有 same site 的情況下，才會送出 cookie。</span><br><span class="line">Lax：比 Strict 寬鬆一點，除了 GET 請求以外，不發送 cookie 到第三方。</span><br><span class="line">None： 允許所有網站對 cookie 的存取。</span><br><span class="line"></span><br><span class="line">所以我們可以使用 SameSite=Lax，讓 POST、PUT、DELETE 請求在跨域的情況下不發送 cookie，避免 CSRF 攻擊，又可以在透過點擊連結進入網站時保持登入狀態。</span><br></pre></td></tr></table></figure>
+<p>Set-Cookie: session_id=zxcvbn19rtyu89; SameSite=Lax<br><code>`</code><br>詳細的細節可以看看 <a href="https://tools.ietf.org/html/draft-west-first-party-cookies-07" target="_blank" rel="noopener">RFC 對於 SameSite cookie 的規範</a></p>
+<h3 id="Referer"><a href="#Referer" class="headerlink" title="Referer"></a>Referer</h3><p>檢查 request header 的 referer，看 domian 是否合法來避掉偽造請求。<br>但是有風險：</p>
+<ul>
+<li>瀏覽器可能不支援</li>
+<li>使用者也可以關閉 referer 的傳送，這樣就會遺失真正的請求</li>
+</ul>
+<h3 id="CSRF-Token"><a href="#CSRF-Token" class="headerlink" title="CSRF Token"></a>CSRF Token</h3><p>最常見的解法，許多框架也直接支援這個做法。</p>
+<p>手法為在 session 和 form 裡面直接埋入一個 CSRF token，然後 server 收到請求後比對是否相同，偽造請求因為不會有這個 CSRF token，所以可以避免造假攻擊，但是缺點為 session 也要存一份，無法 stateless。</p>
+<h3 id="Double-Submit-Cookie"><a href="#Double-Submit-Cookie" class="headerlink" title="Double Submit Cookie"></a>Double Submit Cookie</h3><p>Double Submit Cookie 是 CSRF token 的變形，一樣是要產出一組 CSRF token，但是改存在 cookie 裡面，作法也分兩種：</p>
+<ul>
+<li><p>由 server 產生 token:<br>server 產生 token 後，不存在 session，改存在 cookie 裡，然後 form 也一樣埋入這個 token，等 server 收到請求後一樣把兩者做比對。</p>
+</li>
+<li><p>由 client 產生 token:<br>client 產生 token 後，同時設定在 cookie 裡和 header 上，等 server 收到請求後一樣把兩者做比對，概念是因為攻擊者無法偽造出目標網站的 cookie 。</p>
+</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://blog.techbridge.cc/2017/02/25/csrf-introduction/" target="_blank" rel="noopener">讓我們來談談 CSRF</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0" target="_blank" rel="noopener">wiki:跨站請求偽造</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ck99t5bmx0000dhy5o1qh0q1y" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+  
+</article>
+
+
+  
     <article id="post-where-to-store-json-web-token" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/07/14/where-to-store-json-web-token/" class="article-date">
@@ -103,7 +180,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ck8yb5nbu004v43y5i3djlkgy" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ck99t5bnw001hdhy5zrckovxg" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -217,7 +294,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ck8yb5nbg004343y58d8x79n6" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ck99t5bnb000ddhy516lg4jfq" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -266,7 +343,7 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">有關<span class="tag">&lt;<span class="name">span</span> <span class="attr">name</span>=<span class="string">"search"</span>&gt;</span>&#123;&#123;$search&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span>的搜尋結果：</span><br></pre></td></tr></table></figure>
 <p>如果我們在搜尋的時候加入如下的惡意程式碼，等到網頁回傳搜尋結果時就達成攻擊<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http://example.com?search=&lt;script&gt;alert(document.cookie);&lt;/script&gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;&gt;&lt;script &gt;alert(document.cookie)&lt;/script &gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;&gt;&lt;ScRiPt&gt;alert(document.cookie)&lt;/ScRiPt&gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;%3cscript%3ealert(document.cookie)%3c/script%3e</span><br></pre></td></tr></table></figure></p>
 <h2 id="DOM-Based-XSS"><a href="#DOM-Based-XSS" class="headerlink" title="DOM-Based XSS"></a>DOM-Based XSS</h2><p>藉由 DOM 的漏洞來攻擊，在 DOM 埋入惡意程式碼，藉此來攻擊。</p>
-<p>假設網頁上有一段 DOM 如下，<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> send = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> name = <span class="built_in">document</span>.getElementById(<span class="string">'your_name'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">'name'</span>).innerHTML = name;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"your_name"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"send();"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>假設網頁上有一段 DOM 如下，<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined">  var send = function() &#123;</span></span><br><span class="line"><span class="undefined">    var name = document.getElementById('your_name').value;</span></span><br><span class="line"><span class="undefined">    document.getElementById('name').innerHTML = name;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"your_name"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"send();"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>如果輸入下面的內容，就可以破壞 DOM，執行 JavaScript 達成攻擊了，可以到<a href="https://jsfiddle.net/tracy770830/nyzbfo86/" target="_blank" rel="noopener">這裡</a>測試。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=# onerror=&quot;alert(&apos;XSS 攻擊&apos;);&quot;&gt;</span><br></pre></td></tr></table></figure></p>
 <p>根據這三種類型可以整理出以下的表格：</p>
 <table>
@@ -320,7 +397,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ck8yb5nbx005243y5q3ncz6bz" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ck99t5bnk000rdhy5fepddzqc" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -388,7 +465,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ck8yb5nbf004143y5lsspp5dj" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ck99t5bnd000fdhy5osk4tjua" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -445,7 +522,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ck8yb5nbd003x43y5z7vtq7l3" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ck99t5bn60004dhy5ejcd93j4" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -503,7 +580,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ck8yb5nbh004643y50s9fuvxp" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ck99t5bn50003dhy5cz9pbrdz" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -558,7 +635,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ck8yb5nbj004843y5w8cowv2l" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ck99t5bna000cdhy5z7shasid" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -618,7 +695,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ck8yb5nbk004b43y56q1l5x17" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ck99t5bn80008dhy53knjqeeg" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -684,69 +761,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ck8yb5nbm004g43y5224s4gdq" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ck99t5bne000hdhy5pimdj8pm" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/open-closed-principle/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
-
-    </footer>
-  </div>
-  
-  
-</article>
-
-
-  
-    <article id="post-single-responsibility-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/24/single-responsibility-principle/" class="article-date">
-  <time datetime="2019-06-24T14:33:06.000Z" itemprop="datePublished">2019-06-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/24/single-responsibility-principle/">單ㄧ職責原則</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>A class should have one, and only one, reason to change.<br>– <cite>Robert C. Martin</cite></p>
-</blockquote>
-<p>單ㄧ職責原則，全名 <strong>Single Responsibility Principle</strong>，簡稱 <strong>SRP</strong>。<br>個人覺得 SRP 是 SOLID 六大原則中最簡白易懂的原則。  </p>
-<h2 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h2><p>應該且僅有一個原因引起類別的變更，讓類別只有一個職責。</p>
-<h2 id="秘訣"><a href="#秘訣" class="headerlink" title="秘訣"></a>秘訣</h2><ul>
-<li>關注點分離，一個類別只應有一個核心任務</li>
-<li>不要貪方便全塞一起</li>
-<li>注意切太細會有類別太多的問題</li>
-</ul>
-<h2 id="提醒"><a href="#提醒" class="headerlink" title="提醒"></a>提醒</h2><ul>
-<li>設計階段就可以避開類別職責太大的問題</li>
-<li>但小心在維護階段受到誘惑又讓類別職責變多，所以，想清楚類別的<code>核心價值</code>，若是需要開新的類別，當開則開</li>
-</ul>
-<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>先來看一個例子，下面這個例子是否有可以優化的地方？</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Order</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $products;</span><br><span class="line">    <span class="keyword">private</span> $amount;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">calculateAmount</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;products) &#123;</span><br><span class="line">            <span class="comment">// calculate total amount...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">printInvoice</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">         <span class="comment">//download a PDF invoice</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">printPackingList</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">//download a PDF packing list</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>稍微修改一下，把輸出檔案的部分拆出來，這樣 Order 是不是看起來就更能專注在核心的工作項目上，有關輸出成單據的部分都拆出去，之後也可能會有不同的單據要輸出，擴充性也能更好。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Order</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $products;</span><br><span class="line">    <span class="keyword">private</span> $amount;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">calculateAmount</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;products) &#123;</span><br><span class="line">            <span class="comment">// calculate total amount...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Printable</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">print</span><span class="params">(Order $order)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InvoicePrinter</span> <span class="keyword">implements</span> <span class="title">Printable</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">print</span><span class="params">(Order $order)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $contensts = $order-&gt;getContents();</span><br><span class="line">       <span class="comment">//prepare PDF then download...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PackingListPrinter</span> <span class="keyword">implements</span> <span class="title">Printable</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">print</span><span class="params">(Order $order)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $contensts = $order-&gt;getContents();</span><br><span class="line">       <span class="comment">//prepare PDF then download...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://youtu.be/SLCajYNcThE?t=1953" target="_blank" rel="noopener">PHP 也有 Day #19 - PHP 返樸歸真系列之從實例學設計模式 by 大澤木小鐵 (Jace Ju)​</a><br><a href="https://clouding.city/php/solid/" target="_blank" rel="noopener">物件導向設計原則 SOLID</a><br><a href="http://teddy-chen-tw.blogspot.com/2014/04/solid.html" target="_blank" rel="noopener">SOLID：五則皆變</a><br><a href="http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod" target="_blank" rel="noopener">The Principles of OOD</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="ck8yb5nbo004k43y5kr0azwzj" class="article-share-link">Share</a>
-      
-        <a href="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -763,7 +780,7 @@
 
   <nav id="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
   </nav>
 
 </section>
@@ -787,7 +804,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 15px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 15px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
     </div>
   </div>
 
@@ -796,7 +813,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -807,6 +824,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
+          </li>
         
           <li>
             <a href="/2019/07/14/where-to-store-json-web-token/">JWT 到底要存哪裡？</a>
@@ -822,10 +843,6 @@
         
           <li>
             <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
           </li>
         
       </ul>

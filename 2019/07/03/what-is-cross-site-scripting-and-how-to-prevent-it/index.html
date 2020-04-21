@@ -99,7 +99,7 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">有關<span class="tag">&lt;<span class="name">span</span> <span class="attr">name</span>=<span class="string">"search"</span>&gt;</span>&#123;&#123;$search&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span>的搜尋結果：</span><br></pre></td></tr></table></figure>
 <p>如果我們在搜尋的時候加入如下的惡意程式碼，等到網頁回傳搜尋結果時就達成攻擊<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http://example.com?search=&lt;script&gt;alert(document.cookie);&lt;/script&gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;&gt;&lt;script &gt;alert(document.cookie)&lt;/script &gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;&gt;&lt;ScRiPt&gt;alert(document.cookie)&lt;/ScRiPt&gt;</span><br><span class="line">或</span><br><span class="line">http://example.com?search=&quot;%3cscript%3ealert(document.cookie)%3c/script%3e</span><br></pre></td></tr></table></figure></p>
 <h2 id="DOM-Based-XSS"><a href="#DOM-Based-XSS" class="headerlink" title="DOM-Based XSS"></a>DOM-Based XSS</h2><p>藉由 DOM 的漏洞來攻擊，在 DOM 埋入惡意程式碼，藉此來攻擊。</p>
-<p>假設網頁上有一段 DOM 如下，<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> send = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> name = <span class="built_in">document</span>.getElementById(<span class="string">'your_name'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">'name'</span>).innerHTML = name;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"your_name"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"send();"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>假設網頁上有一段 DOM 如下，<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined">  var send = function() &#123;</span></span><br><span class="line"><span class="undefined">    var name = document.getElementById('your_name').value;</span></span><br><span class="line"><span class="undefined">    document.getElementById('name').innerHTML = name;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"your_name"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"send();"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>如果輸入下面的內容，就可以破壞 DOM，執行 JavaScript 達成攻擊了，可以到<a href="https://jsfiddle.net/tracy770830/nyzbfo86/" target="_blank" rel="noopener">這裡</a>測試。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=# onerror=&quot;alert(&apos;XSS 攻擊&apos;);&quot;&gt;</span><br></pre></td></tr></table></figure></p>
 <p>根據這三種類型可以整理出以下的表格：</p>
 <table>
@@ -153,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ck8yb5nbx005243y5q3ncz6bz" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ck99t5bnk000rdhy5fepddzqc" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -214,7 +214,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 20px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 20px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 15px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 15px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
     </div>
   </div>
 
@@ -223,7 +223,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -234,6 +234,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
+          </li>
         
           <li>
             <a href="/2019/07/14/where-to-store-json-web-token/">JWT 到底要存哪裡？</a>
@@ -249,10 +253,6 @@
         
           <li>
             <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
           </li>
         
       </ul>
