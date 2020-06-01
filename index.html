@@ -130,7 +130,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavxjf88004003y5l3jav4et" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavy3qvt00014cy51hmu5c4c" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -170,23 +170,24 @@
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前討論過關於 JWT 的概念跟使用方法，但是關於 JWT 的儲存方式只講了一般的用法，其實這一部分在網路上眾說紛紜，今天就來聊聊。</p>
 <h2 id="存在-web-storage"><a href="#存在-web-storage" class="headerlink" title="存在 web storage"></a>存在 web storage</h2><p>上一篇講到 JWT 是以 header 的方式傳給 server，這個是指把 JWT 存在瀏覽器的 web storage（local storage 或 session storage）上。<br>這種做法需要注意的幾件事：</p>
 <ul>
-<li>不會有 csrf 危險</li>
+<li>不會有 CSRF 危險</li>
 <li>可能會有 XSS 攻擊的疑慮，因為 JWT 可以透過 js 來取得。</li>
 </ul>
 <h2 id="存在-cookie"><a href="#存在-cookie" class="headerlink" title="存在 cookie"></a>存在 cookie</h2><p>也有人把 JWT 存在 cookie 裡，存在 cookie 的話可能要注意的幾件事：</p>
 <ul>
-<li>需要注意 csrf 的風險，但是現代前端框架已經開始支援保護 cookie。</li>
+<li>需要注意 CSRF 的風險，但是現代前端框架已經開始支援保護 cookie。</li>
 <li>為了防止 XSS 攻擊，要設定 HttpOnly ，防止由 javascript 取得 cookie，詳見<a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Cookies#Secure_%E4%BB%A5%E5%8F%8A_HttpOnly_cookies" target="_blank" rel="noopener">MDN:HTTP cookies。
 </a></li>
 <li>如果有跨域需求，要在 header 加上 domain 資訊，但有可能有瀏覽器版本不支援的問題。</li>
 </ul>
 <h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>關於 JWT 要存在哪到現在還是各有各的說法，沒有一個定論，我想無論如何實作，知道分別的優缺點以及針對需要注意的資安風險做出對應的保護是必須的。 </p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage" target="_blank" rel="noopener">Where to Store your JWTs – Cookies vs HTML5 Web Storage</a><br><a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Cookies" target="_blank" rel="noopener">MDN:Http Cookies</a></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage" target="_blank" rel="noopener">Where to Store your JWTs – Cookies vs HTML5 Web Storage</a></p>
+<p><a href="https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Cookies" target="_blank" rel="noopener">MDN:Http Cookies</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckavxjf8z005703y5yf2xii8k" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckavy3qwj000y4cy56fc4l4uz" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -300,7 +301,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckavxjf8a004503y5g5ryjrkr" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckavy3qw400074cy5ad6sojlp" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -403,7 +404,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckavxjf8y005503y5o51ue92i" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckavy3qwn00134cy5w8ij9gl0" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -478,7 +479,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckavxjf89004203y5x1rufpwr" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckavy3r0m005k4cy5audmhowq" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -535,7 +536,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckavxjf87003y03y55uh412q4" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckavy3qvp00004cy50bvq13vx" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -593,7 +594,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckavxjf8b004703y58xg7bxlt" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckavy3qw200054cy5ysiyz6sf" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -648,7 +649,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckavxjf8f004f03y54jppgh2v" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckavy3qw500084cy5krmlehl6" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -708,7 +709,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckavxjf8d004c03y500wpugiy" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckavy3qw7000c4cy5ueahgxrt" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -774,7 +775,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ckavxjf8g004h03y5tkz1x3ir" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ckavy3qw9000f4cy5rpmwxc1c" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/open-closed-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
