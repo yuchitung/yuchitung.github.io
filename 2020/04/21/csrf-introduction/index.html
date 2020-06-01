@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Yuchi 的學習筆記">
 <meta property="og:description" content="CSRF 是什麼？CSRF(Cross Site Request Forgery) 為跨站請求偽造。簡單講，被害者點擊了攻擊者提供的網頁後，網頁裡面埋了一些惡意的程式碼，目的為假冒被害者的身份去對目標網站發出請求，請求可以是刪除資源或是轉帳等動作，通常是發生在目標網站使用 cookie 做身份認證的情況，利用 cookie 會隨著請求一起被送出的特性來達到攻擊的效果。 解法 SameSite co">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-04-21T11:17:04.140Z">
+<meta property="og:updated_time" content="2020-06-01T01:39:22.036Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CSRF 介紹">
 <meta name="twitter:description" content="CSRF 是什麼？CSRF(Cross Site Request Forgery) 為跨站請求偽造。簡單講，被害者點擊了攻擊者提供的網頁後，網頁裡面埋了一些惡意的程式碼，目的為假冒被害者的身份去對目標網站發出請求，請求可以是刪除資源或是轉帳等動作，通常是發生在目標網站使用 cookie 做身份認證的情況，利用 cookie 會隨著請求一起被送出的特性來達到攻擊的效果。 解法 SameSite co">
@@ -122,7 +122,7 @@
 <p>手法為在 session 和 form 裡面直接埋入一個 CSRF token，然後 server 收到請求後比對是否相同，偽造請求因為不會有這個 CSRF token，所以可以避免造假攻擊，但是缺點為 session 也要存一份，無法 stateless。</p>
 <h3 id="Double-Submit-Cookie"><a href="#Double-Submit-Cookie" class="headerlink" title="Double Submit Cookie"></a>Double Submit Cookie</h3><p>Double Submit Cookie 是 CSRF token 的變形，一樣是要產出一組 CSRF token，但是改存在 cookie 裡面，作法也分兩種：</p>
 <ul>
-<li><p>由 server 產生 token:<br>server 產生 token 後，不存在 session，改存在 cookie 裡，然後 form 也一樣埋入這個 token，等 server 收到請求後一樣把兩者做比對。</p>
+<li><p>由 server 產生 token:<br>server 產生 token 後，不存在 session，改存在 cookie 裡，然後 form 也一樣埋入這個 token，等 server 收到請求後一樣把兩者做比對，因為偽造攻擊的網頁裡面的 form ㄧ定沒有這個 token，所以比對後會發現是非法的請求。</p>
 </li>
 <li><p>由 client 產生 token:<br>client 產生 token 後，同時設定在 cookie 裡和 header 上，等 server 收到請求後一樣把兩者做比對，概念是因為攻擊者無法偽造出目標網站的 cookie 。</p>
 </li>
@@ -133,7 +133,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavt5ec5003revy54usrun3m" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavts0um0001kzy5s8kqjj4a" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
