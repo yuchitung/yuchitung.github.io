@@ -16,7 +16,7 @@
 <meta property="og:description" content="在介紹CORS 之前先討論一下什麼是同源政策 同源政策 (same origin policy)意思就是兩個網頁有相同的domain、protocol以及port號，只要三者有一個不相同即為不同源。 不同源的舉例：  從自己的網站向一個第三方 API 發出請求。 從 CDN 載入一些網路資源，例如 CSS、JS、圖片等  現代瀏覽器基於安全性考量在你發出非同源的請求時，request 會發出，但是">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://lh3.googleusercontent.com/OLH4tOE_tnXj9ttrWi-k_N59qOVuGuXhNLYAp-427z_S2qyFGBMz0dJC_tCoQSMCYVPZxAckd7NWklLbfqX7cJa8o3JR1ZReyL6TJw6IItohPM8Oejd_OoRgmD38cATswUMvznBPvW9VC15pILxk32zZsF7o_pdGIUvupR590YGVOranbEbwaOAJPxlTwCOOYoDQ_6SK09J092kJgJ9Lr-eZm03HVbFv8vaWI0sm2VNuLDbvasU6VqCnzGl0lB9tLv7p9ELuP8bkPQ3HzlRygV0LmQci-HxEcpo_ndl9QoNctxk_5gHZrXe0TpYn7fa8p7LXrIRQD1kf3E_TQNywvxd69TDQjUSrNJDA7SFE_-6TTWw3r4Seoe9qEcMhDWf7G_T28a_S33LDiicBug2l71Z7v-c6dPXo0vnLpoUpFDz50O67Iig-U7Q9sPSxPuefI1d-x8Pux5b18TpuHU1ROiNXhD_d8Oh-nEpu7PteKskpmYR_udAAf7KeAd3rJ6sdQjfRumi9lw2Klf0BwuRydPrHRibTdQGhct41WVPnXtQSQO378dHYW2M9LuWblgDTcIUVOUpPfvTaLKXXwiov4YUc8WuATuat9xNqrBTNVQ4rXSnDG8cUYGJTVXgbvc5kpspwHqYe0yEPtAUmu5UJVW5wekpwnKfLbzq9eqfxDDcChmpZUgUzgLJJ=w783-h115-no">
-<meta property="og:updated_time" content="2020-06-01T01:21:31.154Z">
+<meta property="og:updated_time" content="2020-06-01T02:04:23.842Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CORS 的介紹與實作">
 <meta name="twitter:description" content="在介紹CORS 之前先討論一下什麼是同源政策 同源政策 (same origin policy)意思就是兩個網頁有相同的domain、protocol以及port號，只要三者有一個不相同即為不同源。 不同源的舉例：  從自己的網站向一個第三方 API 發出請求。 從 CDN 載入一些網路資源，例如 CSS、JS、圖片等  現代瀏覽器基於安全性考量在你發出非同源的請求時，request 會發出，但是">
@@ -104,7 +104,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: 250</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Server: nginx</span><br><span class="line">Access-Control-Allow-Origin: *</span><br><span class="line">Cache-Control: no-cache, no-store, must-revalidate, private</span><br><span class="line">Expires: 0</span><br><span class="line">Pragma: no-cache</span><br></pre></td></tr></table></figure>
 <p>其中 <code>Access-Control-Allow-Origin: *</code> 表示任何來源都接受。<br>通常除非是公開的 API 服務，不然 server 上都會設定針對 origin 以及 http method 的限制。</p>
 <h2 id="Simple-Request-amp-Preflight-Request"><a href="#Simple-Request-amp-Preflight-Request" class="headerlink" title="Simple Request &amp; Preflight Request"></a>Simple Request &amp; Preflight Request</h2><p>其實 CORS 又分為兩種情況，一種是簡單請求(<code>simple request</code>)，另一種則是預檢請求(<code>preflight request</code>)。</p>
-<p>simple request 的條件需同時滿足一下條件：</p>
+<p>simple request 的條件需同時滿足以下條件：</p>
 <ul>
 <li>request method 為 GET、HEAD、POST 其一</li>
 <li>Content-Type 為 application/x-www-form-urlencoded、multipart/form-data、text/plain 其一</li>
@@ -127,7 +127,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckavtthvi003qouy5yycgzf4p" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckavurqvt003mtay5xsl9ak3c" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
