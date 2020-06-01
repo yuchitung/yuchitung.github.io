@@ -16,7 +16,7 @@
 <meta property="og:description" content="前言當服務開始龐大，server 開始 scale out，client 端每次的請求可能會交由不同的 server 處理，傳統的 session 模式必須解決 session consistency 的問題，常見的用法可以使用 Memcached 或是 Redis server 來管理。而 JWT 則提供了另一種身份認證的解決方案，有別於 session 具狀態性（Stateful）的形式，jw">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://cdn.auth0.com/content/jwt/jwt-diagram.png">
-<meta property="og:updated_time" content="2020-01-23T08:24:52.416Z">
+<meta property="og:updated_time" content="2020-06-01T03:24:45.062Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="淺談 JWT (Json Web Token)">
 <meta name="twitter:description" content="前言當服務開始龐大，server 開始 scale out，client 端每次的請求可能會交由不同的 server 處理，傳統的 session 模式必須解決 session consistency 的問題，常見的用法可以使用 Memcached 或是 Redis server 來管理。而 JWT 則提供了另一種身份認證的解決方案，有別於 session 具狀態性（Stateful）的形式，jw">
@@ -146,11 +146,11 @@
 </table>
 <p>除此之外，也可以自己定義要夾帶的其他資訊，例如:</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"sub"</span>: <span class="string">"1234567890"</span>,</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"John Doe"</span>,</span><br><span class="line">  <span class="attr">"admin"</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>再來，一樣也是把 paylode 用 base64 編碼，此為 JWT 的第二個部份。</p>
-<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>第三個來做簽章(signature)，簽章是 JWT 的核心，是為了避免有人更改 payload ，偽造身份發出請求，。除非 secret 外洩，否則偽造者無法做出合法的簽章。作法是使用剛剛 <code>base64 後的 header</code> 以及 <code>base64 後的 payload</code> 和一個只有 server 才知道的 <code>secret</code> ，使用的演算法就是 header 裡面指定的演算法，作法如下:</p>
+<p>再來，一樣也是把 payload 用 base64 編碼，此為 JWT 的第二個部份。</p>
+<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>第三個來做簽章(signature)，簽章是 JWT 的核心，是為了避免有人更改 payload ，偽造身份發出請求，除非 secret 外洩，否則偽造者無法做出合法的簽章。作法是使用剛剛 <code>base64 後的 header</code> 以及 <code>base64 後的 payload</code> 和一個只有 server 才知道的 <code>secret</code> ，使用的演算法就是 header 裡面指定的演算法，作法如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HMACSHA256( base64UrlEncode(header) + &quot;.&quot; + base64UrlEncode(payload), secret)</span><br></pre></td></tr></table></figure>
 <p>最後把 header、payload、signature 用 <code>.</code>組起來，JWT 就完成了，可以直接來個<a href="https://jwt.io/" target="_blank" rel="noopener">線上測試</a>。</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>client 發起請求的時候，header 需夾帶下面的資訊才能通過身份驗證。。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>client 發起請求的時候，header 需夾帶下面的資訊才能通過身份驗證。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Authorization: Bearer &lt;token&gt;</span><br></pre></td></tr></table></figure>
 <h2 id="注意事項"><a href="#注意事項" class="headerlink" title="注意事項"></a>注意事項</h2><ul>
 <li>JWT 代表了一個人的認證身份，任何人拿到它都可以盜用其身份對 server 發出請求，故 token 應該安全保存，並且存活的有效期不應設太長，對於一些比較重要的應用應該要再驗證一次身份。</li>
@@ -166,7 +166,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckavurqw70045tay59dv6yuxe" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckavxjf8a004503y5g5ryjrkr" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
