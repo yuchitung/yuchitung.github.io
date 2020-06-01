@@ -115,6 +115,7 @@
 <li>瀏覽器可能不支援</li>
 <li>使用者也可以關閉 referer 的傳送，這樣就會遺失真正的請求</li>
 </ul>
+<p>如果對 referer 不太暸解可以看<a href="http://www.ruanyifeng.com/blog/2019/06/http-referer.html" target="_blank" rel="noopener">HTTP Referer 教程</a>。</p>
 <h3 id="CSRF-Token"><a href="#CSRF-Token" class="headerlink" title="CSRF Token"></a>CSRF Token</h3><p>最常見的解法，許多框架也直接支援這個做法。</p>
 <p>手法為在 session 和 form 裡面直接埋入一個 CSRF token，然後 server 收到請求後比對是否相同，偽造請求因為不會有這個 CSRF token，所以可以避免造假攻擊，但是缺點為 session 也要存一份，無法 stateless。</p>
 <h3 id="Double-Submit-Cookie"><a href="#Double-Submit-Cookie" class="headerlink" title="Double Submit Cookie"></a>Double Submit Cookie</h3><p>Double Submit Cookie 是 CSRF token 的變形，一樣是要產出一組 CSRF token，但是改存在 cookie 裡面，作法也分兩種：</p>
@@ -130,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavy3qvt00014cy51hmu5c4c" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavyquz5003lajy5zjid88kr" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -187,7 +188,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckavy3qwj000y4cy56fc4l4uz" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckavyqv00004xajy52dvu44yg" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -301,7 +302,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckavy3qw400074cy5ad6sojlp" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckavyquze0046ajy5lip9or0i" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -404,7 +405,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckavy3qwn00134cy5w8ij9gl0" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckavyquzz004uajy5o6z4fzoo" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -479,7 +480,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckavy3r0m005k4cy5audmhowq" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckavyquz7003pajy5fq7znp6y" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -536,7 +537,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckavy3qvp00004cy50bvq13vx" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckavyquza003wajy5yfpbjuiy" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -594,7 +595,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckavy3qw200054cy5ysiyz6sf" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckavyquz9003uajy5w9f37xyt" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -649,7 +650,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckavy3qw500084cy5krmlehl6" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckavyquzb003yajy5h81hc440" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -709,7 +710,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckavy3qw7000c4cy5ueahgxrt" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckavyquzc0041ajy5kif04i92" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -775,7 +776,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ckavy3qw9000f4cy5rpmwxc1c" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ckavyquzf0048ajy5xvuxzwhg" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/open-closed-principle/#disqus_thread" class="article-comment-link">Comments</a>
       

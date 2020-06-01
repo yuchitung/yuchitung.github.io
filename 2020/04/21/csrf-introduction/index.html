@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Yuchi 的學習筆記">
 <meta property="og:description" content="CSRF 是什麼？CSRF(Cross Site Request Forgery) 為跨站請求偽造。簡單講，被害者點擊了攻擊者提供的網頁後，網頁裡面埋了一些惡意的程式碼，目的為假冒被害者的身份去對目標網站發出請求，請求可以是刪除資源或是轉帳等動作，通常是發生在目標網站使用 cookie 做身份認證的情況，利用 cookie 會隨著請求一起被送出的特性來達到攻擊的效果。 解法 SameSite co">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-06-01T01:40:35.211Z">
+<meta property="og:updated_time" content="2020-06-01T03:58:29.650Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CSRF 介紹">
 <meta name="twitter:description" content="CSRF 是什麼？CSRF(Cross Site Request Forgery) 為跨站請求偽造。簡單講，被害者點擊了攻擊者提供的網頁後，網頁裡面埋了一些惡意的程式碼，目的為假冒被害者的身份去對目標網站發出請求，請求可以是刪除資源或是轉帳等動作，通常是發生在目標網站使用 cookie 做身份認證的情況，利用 cookie 會隨著請求一起被送出的特性來達到攻擊的效果。 解法 SameSite co">
@@ -118,6 +118,7 @@
 <li>瀏覽器可能不支援</li>
 <li>使用者也可以關閉 referer 的傳送，這樣就會遺失真正的請求</li>
 </ul>
+<p>如果對 referer 不太暸解可以看<a href="http://www.ruanyifeng.com/blog/2019/06/http-referer.html" target="_blank" rel="noopener">HTTP Referer 教程</a>。</p>
 <h3 id="CSRF-Token"><a href="#CSRF-Token" class="headerlink" title="CSRF Token"></a>CSRF Token</h3><p>最常見的解法，許多框架也直接支援這個做法。</p>
 <p>手法為在 session 和 form 裡面直接埋入一個 CSRF token，然後 server 收到請求後比對是否相同，偽造請求因為不會有這個 CSRF token，所以可以避免造假攻擊，但是缺點為 session 也要存一份，無法 stateless。</p>
 <h3 id="Double-Submit-Cookie"><a href="#Double-Submit-Cookie" class="headerlink" title="Double Submit Cookie"></a>Double Submit Cookie</h3><p>Double Submit Cookie 是 CSRF token 的變形，一樣是要產出一組 CSRF token，但是改存在 cookie 裡面，作法也分兩種：</p>
@@ -133,7 +134,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavy3qvt00014cy51hmu5c4c" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckavyquz5003lajy5zjid88kr" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
