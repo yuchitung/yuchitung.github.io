@@ -7,18 +7,18 @@
   
   <title>XSS 攻擊和防堵 | Yuchi 的學習筆記</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 javascript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
+  <meta name="description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 JavaScript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
 <meta name="keywords" content="web,security">
 <meta property="og:type" content="article">
 <meta property="og:title" content="XSS 攻擊和防堵">
 <meta property="og:url" content="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/index.html">
 <meta property="og:site_name" content="Yuchi 的學習筆記">
-<meta property="og:description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 javascript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
+<meta property="og:description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 JavaScript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-07-05T13:56:57.743Z">
+<meta property="og:updated_time" content="2020-06-02T07:58:59.260Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="XSS 攻擊和防堵">
-<meta name="twitter:description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 javascript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
+<meta name="twitter:description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 JavaScript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
   
     <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
   
@@ -87,7 +87,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 javascript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。</p>
+        <p>XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 JavaScript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。</p>
 <p>大致分成三種類型：</p>
 <h2 id="Stored-XSS-儲存型"><a href="#Stored-XSS-儲存型" class="headerlink" title="Stored XSS (儲存型)"></a>Stored XSS (儲存型)</h2><p>經由使用者輸入，然後被存在 server 資料庫中的 JavaScript，若其後用來作為網頁顯示的時候，沒有過濾或是 encode 處理會被視為正常的 JavaScript 執行，藉此達到攻擊別的使用者的效果。常見的場景如<code>論壇文章、留言板</code>等公開的頁面。</p>
 <p>舉個例子，假設有一個 input 可以給使用者留言，如下<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type=<span class="string">"text"</span> placeholder=<span class="string">"請留言"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
@@ -101,6 +101,7 @@
 <h2 id="DOM-Based-XSS"><a href="#DOM-Based-XSS" class="headerlink" title="DOM-Based XSS"></a>DOM-Based XSS</h2><p>藉由 DOM 的漏洞來攻擊，在 DOM 埋入惡意程式碼，藉此來攻擊。</p>
 <p>假設網頁上有一段 DOM 如下，<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> send = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> name = <span class="built_in">document</span>.getElementById(<span class="string">'your_name'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">'name'</span>).innerHTML = name;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"your_name"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"send();"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>如果輸入下面的內容，就可以破壞 DOM，執行 JavaScript 達成攻擊了，可以到<a href="https://jsfiddle.net/tracy770830/nyzbfo86/" target="_blank" rel="noopener">這裡</a>測試。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=# onerror=&quot;alert(&apos;XSS 攻擊&apos;);&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>但被害者不可能自己輸入這種惡意程式碼，除非攻擊者親自到受害者電腦前輸入，否則無法達成攻擊。因此 DOM-Based XSS 通常需要搭配前面兩個手法。讓內容保存在伺服器資料庫中、或是以反射型的方式製造出內容，再藉由 JavaScript 動態產生有效的 DOM 物件來運行惡意程式碼。</p>
 <p>根據這三種類型可以整理出以下的表格：</p>
 <table>
 <thead>
@@ -128,14 +129,14 @@
 </tr>
 </tbody>
 </table>
-<h2 id="防堵方法"><a href="#防堵方法" class="headerlink" title="防堵方法"></a>防堵方法</h2><p>一般來說，防堵的方式不外乎幾種，像是對於使用者傳來的內容做驗證、過濾或是轉譯。驗證的話，有些若是有明確需求的欄位如名字、電話、email可以使用正則式做驗證，拒絕驗證失敗的內容，此為白名單的作法。而另外一種是只要遇到指定的字元如&lt;、&gt;、”、’、&amp;一律過濾掉或是轉譯，但是即便是這樣，攻擊者還是有很多手法可以規避，例如改變字元大小寫、填充額外字元像是空白、使用URL編碼、或是使用等價字元等都可以規避驗證。而且可以被惡意注入的地方從HTML到JS再到CSS都有可能 ，所以 XSS手法變化萬千，如何防堵是個長遠的議題。</p>
+<h2 id="防堵方法"><a href="#防堵方法" class="headerlink" title="防堵方法"></a>防堵方法</h2><p>一般來說，防堵的方式不外乎幾種，像是對於使用者傳來的內容做驗證、過濾或是轉譯。驗證的話，有些若是有明確需求的欄位如名字、電話、email 可以使用正則式做驗證，拒絕驗證失敗的內容，此為白名單的作法。而另外一種是只要遇到指定的字元如 &lt;、&gt;、”、’、&amp; 一律過濾掉或是轉譯，但是即便是這樣，攻擊者還是有很多手法可以規避，例如改變字元大小寫、填充額外字元像是空白、使用 URL 編碼、或是使用等價字元等都可以規避驗證。而且可以被惡意注入的地方從 HTML 到 JS 再到 CSS 都有可能 ，所以 XSS 手法變化萬千，如何防堵是個長遠的議題。</p>
 <p>個人傾向在輸出時做防堵，不要在存進資料庫時做 encode。<br>原因如下：</p>
 <ul>
 <li>如果 encode 的方式選錯或是要修改處理會很麻煩</li>
 <li>如果有搜尋的需求一樣要根據 encode 的方式處理</li>
 <li>根據資料之後可能會被應用的場景不同，可能需要做不同的處理，事先 encode 可能會很麻煩</li>
 </ul>
-<p>特別說明一下，這邊是指輸入至 database 不過濾或是 encode html 和 javascript，但是仍要防堵 SQL injection。</p>
+<p>特別說明一下，這邊是指輸入至 database 不過濾或是 encode html 和 JavaScript，但是仍要防堵 SQL injection。</p>
 <p>那麼具體來說防堵要怎麼做呢？<br>以下針對不同類型的 XSS 討論一下各別的防堵方法：<br>首先，儲存型和反射型 XSS 都是在前端把惡意程式碼插入到 HTML 上，然後讓瀏覽器執行惡意的 JavaScript 達成攻擊。</p>
 <p>防堵的方法有兩種：</p>
 <ul>
@@ -143,7 +144,7 @@
 <li>對 HTML 做充分轉義<br>  如果應用不適合使用純前端渲染的模式，例如有 SEO 需求的考量，需要拼接 HTML，就必須善用模版引擎(template engine) 或是轉譯庫套件</li>
 </ul>
 <p>而 DOM-Based XSS 則是因為 JavaScript 在執行過程中未對使用者輸入的資料做完善的檢查，導致惡意程式碼被插入 DOM 所產生的攻擊。防堵的方式為儘量減少使用 .innerHTML、.outerHTML、.document.write()等方法，轉而使用<code>.textContent、.setAttribute</code>等。此外，DOM 裡的一些監聽事件如 <code>location、onclick、onerror、onload、onmouseover</code>、以及 <code>&lt;a&gt;</code> 標籤的 href 屬性都能把字串作為程式碼執行，使用時需要非常小心。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>XSS 的重點在於<code>輸出端的防堵</code>，所以<code>謹慎處理從使用者端取得的資料</code>以及<code>過濾敏感字元</code>是可以防堵簡單的 XSS 攻擊，但仍可能被破解。XSS 的攻擊往往道高一尺魔高一丈，善用成熟的模版引擎以及轉譯套件庫也是可以參考的選項。並且時常閱讀 XSS Prevention Cheat Sheet 相關的文件以及注意 OWASP ESAPI（Enterprise Security API）這個專案上的最新攻擊手法，才能儘量降低服務被XSS 攻擊的風險。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>XSS 的重點在於<code>輸出端的防堵</code>，所以<code>謹慎處理從使用者端取得的資料</code>以及<code>過濾敏感字元</code>是可以防堵簡單的 XSS 攻擊，但仍可能被破解。XSS 的攻擊往往道高一尺魔高一丈，善用成熟的模版引擎以及轉譯套件庫也是可以參考的選項。並且時常閱讀 XSS Prevention Cheat Sheet 相關的文件以及注意 OWASP ESAPI（Enterprise Security API）這個專案上的最新攻擊手法，才能儘量降低服務被 XSS 攻擊的風險。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet" target="_blank" rel="noopener">XSS Filter Evasion Cheat Sheet</a></p>
 <p><a href="https://www.jishuwen.com/d/2WFh/zh-tw" target="_blank" rel="noopener">前端安全系列（一）：如何防止XSS攻擊？</a></p>
 <p><a href="https://www.owasp.org/index.php/DOM_Based_XSS" target="_blank" rel="noopener">DOM Based XSS</a></p>
@@ -153,7 +154,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckavyquzz004uajy5o6z4fzoo" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckaxn3388005cqpy513w6xmwp" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
