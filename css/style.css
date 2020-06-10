@@ -368,6 +368,7 @@ body {
   color: #fff;
   font-weight: 300;
   text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  background: #000;
 }
 #logo {
   font-size: 40px;
