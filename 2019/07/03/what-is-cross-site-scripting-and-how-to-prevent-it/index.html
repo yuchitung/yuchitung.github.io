@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Yuchi 的學習筆記">
 <meta property="og:description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 JavaScript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-06-02T07:58:59.260Z">
+<meta property="og:updated_time" content="2020-06-02T14:33:29.383Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="XSS 攻擊和防堵">
 <meta name="twitter:description" content="XSS(Cross Site Scripting) 是一種從網頁的漏洞下手，插入惡意程式碼的攻擊方式。攻擊本身是不給 server 帶來傷害，會造成傷害的是其他使用者。手法是在網站上一些可以讓使用者輸入的地方埋入 html 或是 JavaScript 的惡意腳本，讓其他使用者在瀏覽這個網頁時可以在背後竊取使用者的 cookie 送到指定伺服器或是引導到虛假頁面。 大致分成三種類型： Stored">
@@ -101,7 +101,7 @@
 <h2 id="DOM-Based-XSS"><a href="#DOM-Based-XSS" class="headerlink" title="DOM-Based XSS"></a>DOM-Based XSS</h2><p>藉由 DOM 的漏洞來攻擊，在 DOM 埋入惡意程式碼，藉此來攻擊。</p>
 <p>假設網頁上有一段 DOM 如下，<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> send = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> name = <span class="built_in">document</span>.getElementById(<span class="string">'your_name'</span>).value;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.getElementById(<span class="string">'name'</span>).innerHTML = name;</span></span><br><span class="line"><span class="undefined">  &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"your_name"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span> <span class="attr">onclick</span>=<span class="string">"send();"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>如果輸入下面的內容，就可以破壞 DOM，執行 JavaScript 達成攻擊了，可以到<a href="https://jsfiddle.net/tracy770830/nyzbfo86/" target="_blank" rel="noopener">這裡</a>測試。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=# onerror=&quot;alert(&apos;XSS 攻擊&apos;);&quot;&gt;</span><br></pre></td></tr></table></figure></p>
-<p>但被害者不可能自己輸入這種惡意程式碼，除非攻擊者親自到受害者電腦前輸入，否則無法達成攻擊。因此 DOM-Based XSS 通常需要搭配前面兩個手法。讓內容保存在伺服器資料庫中、或是以反射型的方式製造出內容，再藉由 JavaScript 動態產生有效的 DOM 物件來運行惡意程式碼。</p>
+<p>但被害者不可能自己輸入這種惡意程式碼，除非攻擊者親自到受害者電腦前輸入，否則無法達成攻擊。因此 DOM-Based XSS 通常需要搭配前面兩個手法。讓內容保存在伺服器資料庫中，或是以反射型的方式製造出內容，再藉由 JavaScript 動態產生有效的 DOM 物件來運行惡意程式碼。</p>
 <p>根據這三種類型可以整理出以下的表格：</p>
 <table>
 <thead>
@@ -154,7 +154,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckaxn3388005cqpy513w6xmwp" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckb9644fl005adpy5ncsw1azm" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
