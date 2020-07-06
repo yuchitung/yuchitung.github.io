@@ -62,6 +62,106 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-cgi-fastcgi-and-phpfpm" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/07/06/cgi-fastcgi-and-phpfpm/" class="article-date">
+  <time datetime="2020-07-06T09:02:14.000Z" itemprop="datePublished">2020-07-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/06/cgi-fastcgi-and-phpfpm/">CGI、FastCGI 和 PHP-FPM</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>早期的網頁只是按照客戶端請求將保存在 web server 中的靜態資源回傳(例如圖片、CSS、HTML)，這種情況下客戶端每次獲取的訊息都是同樣的內容，而現今僅僅通過靜態資源已經無法滿足客戶的需求，所以引入 CGI 以便客戶端請求能夠觸發 web server 運行另一個外部程式，連同客戶端所輸入的參數一起傳給這個外部程式，該程式會將動態生成的 HTML 和其他資訊通過 web server 再返回給客戶端（即動態請求，例如基於 PHP、Python、Java 實現的應用）。利用 CGI 可以針對用戶請求動態返回給客戶端各種各樣動態變化的訊息。</p>
+<p>以 PHP 來說，PHP 的運作模式分成幾種：</p>
+<ul>
+<li>CLI命令行模式</li>
+<li>Module 模式</li>
+<li>CGI 模式 </li>
+<li>Fast-CGI 模式</li>
+</ul>
+<p>這篇只先討論下面兩種模式，有興趣暸解 Module 模式的可以看 <a href="https://mark-lin.com/posts/20190131/" target="_blank" rel="noopener">PHP 的 Web 運行原理 ( 1 ) - 傳統型</a>。</p>
+<h2 id="CGI"><a href="#CGI" class="headerlink" title="CGI"></a>CGI</h2><p>CGI(Common Gateway Interface)，為 web server 與 CGI 程式(如 php, python)間進行“交談”的一種<code>工具或協議</code>。CGI 程式可以用任何一種語言編寫，只要這種語言具有標準輸入、輸出和環境變量，如 php、perl、tcl 等。</p>
+<p>根據使用者的請求，web server 會傳一些資訊給 PHP 解析器，例如 URL、查詢字串、POST 內容、HTTP header。CGI 就是規定要傳哪些資訊，以什麼樣的格式傳遞給後方處理這個請求的協議。web 服務器收到用戶請求，就會把請求提交給 CGI 程式（如php-cgi），CGI 程式根據請求的參數來解析程式，然後輸出標準的 html 語句，返回給 web 服務器， web 服務器再返回給客戶端，這就是 CGI 的工作流程，可以參考下圖。</p>
+<p><img src="https://www.elprocus.com/wp-content/uploads/CGI-WORKING-scaled.jpg" alt="common-gateway-interface-working"><br><a href="https://www.elprocus.com/what-is-common-gateway-interface-working-and-its-applications/" target="_blank" rel="noopener">圖片來源</a></p>
+<p>CGI program 針對每個 HTTP 請求都會 fork 一個新的 process 來做事，例如解析配置文件、初始化執行環境、處理請求等，然後把這個 process 處理完的結果通過 web server 轉發給用戶，剛剛 fork 出的 process 也隨之退出，如果下次用戶再請求動態資源，那麼 web server 又再次 fork process，如此周而復始，過程大概如下。</p>
+<p>CGI program 的工作流程：</p>
+<ol>
+<li>初始化各種相關變量</li>
+<li>調用並初始化 zend 虛擬機</li>
+<li>載入並解析 php.ini</li>
+<li><ul>
+<li>啟動 zend， zend 載入 php 腳本，做語法分析</li>
+<li>編譯 php 腳本成 opcode</li>
+<li>輸出結果</li>
+<li>關閉虛擬機</li>
+</ul>
+</li>
+<li>回傳結果給 web server</li>
+</ol>
+<p>傳統 CGI 主要缺點是效能很差，因為每一次 web 請求都會有啟動和退出的過程，也就是 fork-and-execute 模式。這個模式幾乎無法處理高併發的請求，因此就誕生了 FastCGI。此外，傳統的 CGI 安全性也很差，現在已經很少被使用了。</p>
+<h2 id="FastCGI"><a href="#FastCGI" class="headerlink" title="FastCGI"></a>FastCGI</h2><p>FastCGI 是 CGI 的升級版本，為了提升 CGI 的效能而生，也是種協議。與 CGI 的 fork-and-execute 模式不同，FastCGI 則會先 fork 一個 master process，解析配置文件，初始化執行環境，然後再 fork 多個 worker process，當請求過來時 master process 會將請求分配給一個 worker process，然後立即可以接受下一個請求，提高了處理請求的效率，而且當 worker process 不夠用時，master process 還可以根據配置預先啟動幾個 worker process 等著，當閒置的 worker process 太多時，也會關掉一些，這樣不僅提高了效能，也節省了系統資源。另外常佇運行的 master process 同時也避免了重複的初始化操作。</p>
+<p>FastCGI 採用 client-server 結構，可以將 web server 和腳本解析服務器分開，同時在腳本解析服務器上啟動一個或者多個腳本解析 process。當 web server 每次遇到動態程序時，可以將其直接交付給 FastCGI process 來執行，然後將得到的結果返回給瀏覽器。這種方式可以讓 web server 專注處理靜態請求，或者將動態腳本服務器的結果返回給客戶端，提高了整個應用系統的性能。</p>
+<p><img src="https://lh3.googleusercontent.com/MsL2GIo-A9fgPiHt_yE93vq1_FsfEjIlmekcT3Gfe1y6QDbDKJFKycdCCxU5OWkVE_IAf6_Mt4fE15yc26l9JYcdElv3juIloAY0VTioIpw8miHt7X5O7MdwiUrcGT6kwO6tcoSm0M8MlyjNZzek1cij_RS-zGUMKEMSIYo4ym-uSvLAB7ywVBtO1H5VoADV0DmvsYfvMBe9xflVP2wBBiSWHPK-bRNiMcp70BFhyO15qJ-UlDXe6Lo4DnZ4MzyzyPllJ1grKs00BJYdZmdoEtpYzUrh0fur-M5050CS9Kkv5hCXjduzPzKZ1l4fSsq3WX3McWy7u4icuw6SwoJWlm5mM-PhOG5iHWY0PpgrmzycsoFgULJ1NqsGzerBowkFOc4LzfQd8KFo-LmAu_KF9VXyPthEDBtxifmEGGtSjrnIvQY-Cu51gskU3L9QklXAW1m4hZxvpOXbWsoQTC-FVDXSRKr_YCX1pS6iwyc1aBluacOjQe1etzQ8aDUY2jM6T3CNOrhVJM9kJWdfAKiPY4haj8GsZhreSVTiCmepis-NSYF3ysJpq3syFBNUPI7f8d6Nb2AaQlnwXdhHyUMFym8SJenLtB7UNYqLd1EVQWK3RqjhfkyUT33oDcYYK5dfxNooMcL0HJQj-ATqx7bP08ZxZ84-fHga_pWD0NUTDZ-FquuC9jPPVRTQ2xZ5AwM=w851-h282-no?authuser=0" alt=""></p>
+<h2 id="PHP-FPM"><a href="#PHP-FPM" class="headerlink" title="PHP-FPM"></a>PHP-FPM</h2><blockquote>
+<p>PHP-FPM (php-Fastcgi Process Manager) 是對於 FastCGI 協議的具體實現。</p>
+</blockquote>
+<p>FastCGI 只是一個協議規範，需要每個語言具體去實現，PHP-FPM 就是 PHP 版本的 FastCGI 協議的具體實作，目的為實現 web server 與 PHP 腳本之間的溝通。</p>
+<p>PHP-FPM 負責管理一個 process pool 來處理來自 web server 的 HTTP 動態請求，在 PHP-FPM 中，master process 負責與 Web server 進行通訊，接收 HTTP 請求，再將請求轉發給 worker process 進行處理，worker process 主要負責動態執行 PHP 程式碼，處理完成後，將處理結果返回給 web 服務器，再由 web 服務器將結果發送給客戶端。這就是PHP-FPM 的基本工作原理，概念可以看下圖：</p>
+<p><img src="https://lh3.googleusercontent.com/ONExjhRMGPOeI6gN8j_GcBHEc_zXXtQKCgZuhkm3mQlgz0fdh-T07xIyoKfSUIl2i9zW9ZPGPd7PooGjS4Z-n8UIdM2Koexnw6TSMN5LUuVl4vMKuorj8O4XaXc2qJ1hrT0mdlOtLHPLd1W3ea9LFF_zOJSzBPwbM6QbRWSZa93ew-ittpCgLwNrOLyweXcHp--D2MWxObKZXM48LNU38AaWQ0ktIxkRbCq22ku54wmqEAs3fPeNpXUNwxNQuprWoHiE8SoamylD9xub-3884Ui8ZOtXGFtrPLqIeUoGXDJ4PzV4QI03R11V0TC3W1CMICXQJ1aSbLPodLgettvFk2RHin5C1PiGoPhMbyGK6T060X1zTvuhh61J5SuRyjvhfbTYLuTa0mDDUZPaWOMcdLiD-5Ql8PGv9sVEYDGsEN5h3rD9Le7yuluJLWKfrTk2-2uurbf-Lb8il4HGG93k05fkayG7I3D42xlbiUHWQKCpsrOa-caAo2hl1htnbxh2rsK-nKvY4FbAlTDweXO_e6kB_otj1wS2GGCuEEkp6NGJTPaufqC-x4Ivqd4rhmIQ99mebOCh4pnycebY_eGkxYCRYZ_LZUEg74OcT_KHfj43g4CQrughO-GMlNVItGiEA0zN9z7_f3mjYp3ACvnm3oVUZypzlmtSrVA2NjtOb7h9zKvt0mX-nvcRzF77YMI=w1242-h462-no?authuser=0" alt=""></p>
+<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><ul>
+<li>CGI: 介於 HTTP server 與 CGI program 溝通的工具、協定。</li>
+<li><p>FastCGI: CGI 的改版，其 process 會持續運行，並支援分佈式運行。</p>
+</li>
+<li><p>PHP-CGI: 一種實作 FastCGI 的 process manager</p>
+</li>
+<li>PHP-FPM: 另一種實作 FastCGI 的 process manager，原本是 PHP 的補丁，在 PHP 5.3.2 被官方加入 PHP。 </li>
+</ul>
+<p>最後附上幾篇文章討論關於 PHP-FPM 的優化建議:</p>
+<p><a href="https://clhjoe.github.io/post/php-process-tuning/" target="_blank" rel="noopener">PHP Process Tuning</a></p>
+<p><a href="http://www.stelin.me/2017/06/09/php-fpm%E8%AF%A6%E8%A7%A3" target="_blank" rel="noopener">php-fpm详解</a> (這篇有討論關於 502 Bad Gateway ＆ 504 Gateway Time-out 的優化建議)</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://zh.wikipedia.org/wiki/%E9%80%9A%E7%94%A8%E7%BD%91%E5%85%B3%E6%8E%A5%E5%8F%A3" target="_blank" rel="noopener">通用閘道器介面</a></p>
+<p><a href="https://goodspeedlee.blogspot.com/2016/08/it-cgi.html" target="_blank" rel="noopener">IT 考古: 什麼是 CGI?</a></p>
+<p><a href="https://www.awaimai.com/371.html" target="_blank" rel="noopener">CGI、FastCGI和PHP-FPM关系图解</a></p>
+<p><a href="https://www.elprocus.com/what-is-common-gateway-interface-working-and-its-applications/" target="_blank" rel="noopener">What is Common Gateway Interface : Working and Its Applications</a></p>
+<p><a href="https://six.club/article/403" target="_blank" rel="noopener">PHP-FPM是什么？</a></p>
+<p><a href="https://www.php.net/manual/en/install.fpm.php" target="_blank" rel="noopener">FastCGI Process Manager (FPM)</a></p>
+<p><a href="https://aleen42.gitbooks.io/wiki/qa/cgi_difference.html" target="_blank" rel="noopener">Differences between CGI, FastCGI, PHP-CGI, PHP-FPM, Spawn-FCGI </a></p>
+<p><a href="https://mark-lin.com/posts/20190131/" target="_blank" rel="noopener">PHP 的 Web 運行原理 ( 1 ) - 傳統型</a></p>
+<p><a href="https://ifun01.com/BLLAFS9.html" target="_blank" rel="noopener">CGI、FastCGI、PHP-CGI與PHP-FPM</a></p>
+<p><a href="https://www.twblogs.net/a/5d0043fabd9eee14029fb688" target="_blank" rel="noopener">php-fpm與fastcgi、php-cgi之間的關係及源碼解析</a></p>
+<p><a href="https://itw01.com/Q34X5EA.html" target="_blank" rel="noopener">【PHP核心】PHP的執行模式</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/" data-id="ckcaa08yj0042j3y5ae7aojoq" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
+
+    </footer>
+  </div>
+  
+  
+</article>
+
+
+  
     <article id="post-csrf-introduction" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/04/21/csrf-introduction/" class="article-date">
@@ -131,7 +231,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckca9w98t0001c7y5dkbbofmq" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckcaa08yn0049j3y5un2rlgno" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -188,7 +288,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckca9w99j0014c7y55ba0hol2" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckcaa08zg005hj3y58uw1em1y" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -302,7 +402,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckca9w98z0007c7y5b75po544" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckcaa08yx004lj3y5v1slrq1s" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -406,7 +506,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckca9w99f000wc7y54t54bx2p" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckcaa08zf005fj3y5mdp3ufov" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -481,7 +581,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckca9w98w0003c7y5wd5y7pmd" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckcaa08yl0046j3y568oqdgjd" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -538,7 +638,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckca9w99c000qc7y53ia54mvd" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckcaa08yo004bj3y5l9iyyl4y" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -596,7 +696,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckca9w997000hc7y5cft3a43w" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckcaa08yu004jj3y5z4onnui0" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -651,7 +751,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckca9w992000ac7y5vqm7gb2w" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckcaa08yy004oj3y57ed16o0e" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -711,75 +811,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckca9w9900008c7y54sovsvve" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckcaa08z6004sj3y5ebmc2fpq" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
-
-    </footer>
-  </div>
-  
-  
-</article>
-
-
-  
-    <article id="post-open-closed-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/24/open-closed-principle/" class="article-date">
-  <time datetime="2019-06-24T14:33:35.000Z" itemprop="datePublished">2019-06-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/24/open-closed-principle/">封閉開放原則</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>You should be able to extend a classes behavior, without modifying it.<br>– <cite>Robert C. Martin</cite></p>
-</blockquote>
-<p>封閉開放原則，全名 Open-closed Principle，簡稱 OCP。</p>
-<h2 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h2><blockquote>
-<p>對擴充開放，對修改封閉。</p>
-</blockquote>
-<p>第一次看到的話是不是很匪夷所思，要怎麼新增功能又不修改程式碼呢？<br>其實是<code>新增功能(擴充)，但是不修改舊有的功能(對修改封閉)</code>，也就是只要把程式寫成在之後要新增功能時，不需要改動原本有的功能就好了。</p>
-<h2 id="怎麼做呢？"><a href="#怎麼做呢？" class="headerlink" title="怎麼做呢？"></a>怎麼做呢？</h2><p>實踐這個原則的手法有不少，還是要依照實際的情境選擇適合的方法。<br>以下是可以參考的作法：</p>
-<ul>
-<li>利用繼承</li>
-<li>利用抽象介面</li>
-<li>依賴倒轉 (Dependency Injection pattern, DIP)</li>
-<li>裝飾者模式</li>
-<li>策略模式</li>
-</ul>
-<h2 id="秘訣"><a href="#秘訣" class="headerlink" title="秘訣"></a>秘訣</h2><p>如果還是不知道麼開始的話，試著用<code>抽象層級</code>的方式去思考類別，不要把功能寫死，試著寫成抽象的概念，然後把會<code>造成改變的選項較給別的類別處理</code>，主要類別還是專心處裡核心任務。最後，通常變化都是後來才出現的，一開始設計的時候，不一定會構思到要這樣寫，之後再透過重構完成即可。</p>
-<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>看個範例吧！<br>下面這一段程式碼，假設我們有一台 Nintendo 主機，然後我們手邊有三款遊戲可以玩，要玩的時候呼叫 play function 就可以了。<br>但是，如果我每買一款遊戲就要新增遊戲在這個 Nintendo 類別裡面…</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Nintendo</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">play</span><span class="params">(string $game)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="keyword">switch</span> ($game) &#123;</span><br><span class="line">           <span class="keyword">case</span> <span class="string">'mario'</span>:</span><br><span class="line">               $mario = <span class="keyword">new</span> Mario();</span><br><span class="line">               $mario-&gt;start();</span><br><span class="line">           <span class="keyword">case</span> <span class="string">'car-racing'</span>:</span><br><span class="line">               $carRacing = <span class="keyword">new</span> CarRacing();</span><br><span class="line">               $carRacing-&gt;start();</span><br><span class="line">           <span class="keyword">case</span> <span class="string">'pokemon'</span>:</span><br><span class="line">               $pokemon = <span class="keyword">new</span> Pokemon();</span><br><span class="line">               $pokemon-&gt;start();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>試著改改看…<br>把 game 抽出來寫成介面，定義一些所有遊戲都會需要的基本功能，之後每一款遊戲再各自去實作細節。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Game</span> </span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mario</span> <span class="keyword">implements</span> <span class="title">Game</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">protected</span> $mario;</span><br><span class="line">   <span class="keyword">protected</span> $wario;</span><br><span class="line">   <span class="keyword">protected</span> $luigi;</span><br><span class="line">   ...</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="comment">//initialize characters...</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       ...</span><br><span class="line">   &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CarRacing</span> <span class="keyword">implements</span> <span class="title">Game</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       ...</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pokemon</span> <span class="keyword">implements</span> <span class="title">Game</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       ...</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>接下來，把 Nintendo 改成這樣</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Nintendo</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">play</span><span class="params">(Game $game)</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       $game-&gt;start();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以後，每新增一款遊戲<code>(對擴充開放)</code>，我們也不會動到 Nintendo 了<code>(對修改封閉)</code>，喔耶！<br>而且 Nintendo 在呼叫 play 時，也不用管你是什麼遊戲，只要讓遊戲呼叫 start 就好了。</p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://www.youtube.com/watch?v=SLCajYNcThE&amp;t=954s" target="_blank" rel="noopener">PHP 也有 Day #19 - PHP 返樸歸真系列之從實例學設計模式 by 大澤木小鐵 (Jace Ju)​</a><br><a href="https://clouding.city/php/solid/" target="_blank" rel="noopener">物件導向設計原則 SOLID</a><br><a href="http://teddy-chen-tw.blogspot.com/2014/04/solid.html" target="_blank" rel="noopener">SOLID：五則皆變</a><br><a href="http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod" target="_blank" rel="noopener">The Principles of OOD</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ckca9w993000cc7y5aggvbagz" class="article-share-link">Share</a>
-      
-        <a href="https://yuchitung.github.io/2019/06/24/open-closed-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
@@ -820,7 +854,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 15px;">oop</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 15px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
     </div>
   </div>
 
@@ -829,7 +863,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">July 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
     </div>
   </div>
 
@@ -840,6 +874,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/07/06/cgi-fastcgi-and-phpfpm/">CGI、FastCGI 和 PHP-FPM</a>
+          </li>
         
           <li>
             <a href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
@@ -855,10 +893,6 @@
         
           <li>
             <a href="/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/">XSS 攻擊和防堵</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/28/cross-origin-resource-sharing/">CORS 的介紹與實作</a>
           </li>
         
       </ul>
