@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fvIUisyhzCQYt6aO7pUf3bf_iHYJz3Z8VCCHxxH27UhmVWWSNN1qwziZoF0nRU8eXM7gsYaBepYjNZoFWz-_u79_1yyFREPyi7GpYyrByvPj0zFXXdplbKBF7qiy6sf-Ml8BkPPagFKspnWUXKN23seA=w1980-h988-no?authuser=0">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eWpJUpHvprbRD77AyDAus7OqC423AJT5J_3f8b7OIO7k9sgjMnv5unvJC-vltqLKEORhMWdM21WDQhhKD0PwCU0uodi5X3UpB8lZ_Z8WnJcAS1TLPPJrsMJ90CMVxkQ8xZLO_Qxc1gT0he5vogRXaFGQ=w1104-h952-no?authuser=0">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eAHenJiCpU_rOwHp24zD2_jXfE07AFoymBEUEnJWFw1sXL5yDH9zkc6keUr5aQO5GJLsHV2nHUYhvmq1WdtpXvssSAUGULpr0bKdbCTpLYgOVv1afnxU2LxYQgvhmjRA48qPFK5fls2YAEbm2UIKx2dQ=w1098-h946-no?authuser=0">
-<meta property="og:updated_time" content="2020-07-08T15:09:55.010Z">
+<meta property="og:updated_time" content="2020-07-08T15:12:19.581Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 Laradock 和 PhpStorm 設定 xdebug">
 <meta name="twitter:description" content="前言 環境： mac 先安裝好 PhpStorm 下載 Laradock 專案  安裝 xdebug設定 laradock/.env12WORKSPACE_INSTALL_XDEBUG=truePHP_FPM_INSTALL_XDEBUG=true 設定 xdebug 環境參數設定 laradock/workspace/xdebug.ini &amp;amp; laradock/php-fpm/xdebu">
@@ -128,11 +128,11 @@
 <p>更多介紹可以看<a href="http://guojianxiang.com/posts/2015-09-06-PHP_Debug_Tool-Xdebug.html" target="_blank" rel="noopener">PHP调试工具-Xdebug</a></p>
 <h3 id="composer-超慢"><a href="#composer-超慢" class="headerlink" title="composer 超慢"></a>composer 超慢</h3><p>image build 完重啟後，composer install 一直無反應 ，連 composer -v 也是如此，以為是 container 有問題，所以反覆刪掉 container 和 image，反覆重 build 重啟…。 </p>
 <p>直到放了一段很長時間後，composer 才開始跑，並且在跑之前有這樣的訊息:</p>
-<pre><code>1571381068.831664: There was a problem sending 289 bytes on socket 4: Broken pipe
-</code></pre><p>經過超多次測試，確定是開了 debug 造成 composer 超慢，也嘗試了超多種設定，目前還沒有找到一個最佳解。<br>目前暫時的做法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1571381068.831664: There was a problem sending 289 bytes on socket 4: Broken pipe</span><br></pre></td></tr></table></figure>
+<p>經過超多次測試，確定是開了 debug 造成 composer 超慢，也嘗試了超多種設定，目前還沒有找到一個最佳解。<br>目前暫時的做法是：</p>
 <ol>
 <li>docker 的 xdebug 設定開啟 </li>
-<li>然後 container 啟動後以 root 權限進入 workspace -&gt; vi/etc/php/7.2/cli/con.d/20-xdebug.ini 註解掉裡面的設定，<br>這樣可以暫時讓兩個服務都能使用…</li>
+<li>然後 container 啟動後以 root 權限進入 workspace， 註解掉 /etc/php/7.2/cli/con.d/20-xdebug.ini 裡面的設定，<br>這樣可以暫時讓兩個服務都能使用…</li>
 </ol>
 <p><code>UPDATE</code>: 20200708 再次測試，已經沒有這個問題。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://learnku.com/articles/24389" target="_blank" rel="noopener">Laradock 使用 PhpStorm Debug 代码</a></p>
@@ -141,7 +141,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcdi0tcy000m60y58zkqotmv" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcdi3x8q000q9dy5gl77861v" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/#disqus_thread" class="article-comment-link">Comments</a>
       

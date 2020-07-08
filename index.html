@@ -117,11 +117,11 @@
 <p>更多介紹可以看<a href="http://guojianxiang.com/posts/2015-09-06-PHP_Debug_Tool-Xdebug.html" target="_blank" rel="noopener">PHP调试工具-Xdebug</a></p>
 <h3 id="composer-超慢"><a href="#composer-超慢" class="headerlink" title="composer 超慢"></a>composer 超慢</h3><p>image build 完重啟後，composer install 一直無反應 ，連 composer -v 也是如此，以為是 container 有問題，所以反覆刪掉 container 和 image，反覆重 build 重啟…。 </p>
 <p>直到放了一段很長時間後，composer 才開始跑，並且在跑之前有這樣的訊息:</p>
-<pre><code>1571381068.831664: There was a problem sending 289 bytes on socket 4: Broken pipe
-</code></pre><p>經過超多次測試，確定是開了 debug 造成 composer 超慢，也嘗試了超多種設定，目前還沒有找到一個最佳解。<br>目前暫時的做法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1571381068.831664: There was a problem sending 289 bytes on socket 4: Broken pipe</span><br></pre></td></tr></table></figure>
+<p>經過超多次測試，確定是開了 debug 造成 composer 超慢，也嘗試了超多種設定，目前還沒有找到一個最佳解。<br>目前暫時的做法是：</p>
 <ol>
 <li>docker 的 xdebug 設定開啟 </li>
-<li>然後 container 啟動後以 root 權限進入 workspace -&gt; vi/etc/php/7.2/cli/con.d/20-xdebug.ini 註解掉裡面的設定，<br>這樣可以暫時讓兩個服務都能使用…</li>
+<li>然後 container 啟動後以 root 權限進入 workspace， 註解掉 /etc/php/7.2/cli/con.d/20-xdebug.ini 裡面的設定，<br>這樣可以暫時讓兩個服務都能使用…</li>
 </ol>
 <p><code>UPDATE</code>: 20200708 再次測試，已經沒有這個問題。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://learnku.com/articles/24389" target="_blank" rel="noopener">Laradock 使用 PhpStorm Debug 代码</a></p>
@@ -130,7 +130,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcdi0tcy000m60y58zkqotmv" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcdi3x8q000q9dy5gl77861v" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -230,7 +230,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/" data-id="ckcdi0tcc000160y56f554zxv" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/" data-id="ckcdi3x8500019dy54k4emrnl" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -314,7 +314,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckcdi0tcg000360y5m0ekwvg1" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckcdi3x8800039dy5g5wah5ml" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -371,7 +371,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckcdi0tdd001960y5qtu721ht" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckcdi3x8y00189dy5ocbu3j1s" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -485,7 +485,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckcdi0tcu000h60y55kdclo4x" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckcdi3x8f000a9dy59uak7b1n" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -589,7 +589,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckcdi0tdc001660y5myhhmrtv" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckcdi3x8x00159dy5j57qu72g" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -664,7 +664,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckcdi0tch000460y5acqci1y6" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckcdi3x8a00049dy5uevjhpj3" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -721,7 +721,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckcdi0tci000560y5utugbddb" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckcdi3x8b00059dy5tkvn1l7h" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -779,7 +779,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckcdi0tck000760y5vc571h1r" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckcdi3x8d00089dy5itj85blt" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -834,7 +834,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckcdi0tcm000a60y5vlbaurnt" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckcdi3x8g000c9dy5ewu2e7ca" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
