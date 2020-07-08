@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fvIUisyhzCQYt6aO7pUf3bf_iHYJz3Z8VCCHxxH27UhmVWWSNN1qwziZoF0nRU8eXM7gsYaBepYjNZoFWz-_u79_1yyFREPyi7GpYyrByvPj0zFXXdplbKBF7qiy6sf-Ml8BkPPagFKspnWUXKN23seA=w1980-h988-no?authuser=0">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eWpJUpHvprbRD77AyDAus7OqC423AJT5J_3f8b7OIO7k9sgjMnv5unvJC-vltqLKEORhMWdM21WDQhhKD0PwCU0uodi5X3UpB8lZ_Z8WnJcAS1TLPPJrsMJ90CMVxkQ8xZLO_Qxc1gT0he5vogRXaFGQ=w1104-h952-no?authuser=0">
 <meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3eAHenJiCpU_rOwHp24zD2_jXfE07AFoymBEUEnJWFw1sXL5yDH9zkc6keUr5aQO5GJLsHV2nHUYhvmq1WdtpXvssSAUGULpr0bKdbCTpLYgOVv1afnxU2LxYQgvhmjRA48qPFK5fls2YAEbm2UIKx2dQ=w1098-h946-no?authuser=0">
-<meta property="og:updated_time" content="2020-07-08T14:15:56.346Z">
+<meta property="og:updated_time" content="2020-07-08T15:09:55.010Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 Laradock 和 PhpStorm 設定 xdebug">
 <meta name="twitter:description" content="前言 環境： mac 先安裝好 PhpStorm 下載 Laradock 專案  安裝 xdebug設定 laradock/.env12WORKSPACE_INSTALL_XDEBUG=truePHP_FPM_INSTALL_XDEBUG=true 設定 xdebug 環境參數設定 laradock/workspace/xdebug.ini &amp;amp; laradock/php-fpm/xdebu">
@@ -103,7 +103,7 @@
 <h2 id="安裝-xdebug"><a href="#安裝-xdebug" class="headerlink" title="安裝 xdebug"></a>安裝 xdebug</h2><p>設定 laradock/.env<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WORKSPACE_INSTALL_XDEBUG=true</span><br><span class="line">PHP_FPM_INSTALL_XDEBUG=true</span><br></pre></td></tr></table></figure></p>
 <h2 id="設定-xdebug-環境參數"><a href="#設定-xdebug-環境參數" class="headerlink" title="設定 xdebug 環境參數"></a>設定 xdebug 環境參數</h2><p>設定 laradock/workspace/xdebug.ini &amp; laradock/php-fpm/xdebug.ini<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">xdebug.remote_host=docker.for.mac.localhost</span><br><span class="line">xdebug.remote_connect_back=0</span><br><span class="line">xdebug.remote_port=9001</span><br><span class="line">xdebug.idekey=PHPSTORM</span><br><span class="line"></span><br><span class="line">xdebug.remote_autostart=1</span><br><span class="line">xdebug.remote_enable=1</span><br><span class="line">xdebug.cli_color=0</span><br><span class="line">xdebug.profiler_enable=0</span><br><span class="line">xdebug.profiler_output_dir=&quot;~/xdebug/phpstorm/tmp/profiling&quot;</span><br><span class="line"></span><br><span class="line">xdebug.remote_handler=dbgp</span><br><span class="line">xdebug.remote_mode=req</span><br><span class="line"></span><br><span class="line">xdebug.var_display_max_children=-1</span><br><span class="line">xdebug.var_display_max_data=-1</span><br><span class="line">xdebug.var_display_max_depth=-1</span><br></pre></td></tr></table></figure></p>
 <p>rebuild image<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose build --no-cache php-fpm workspace</span><br></pre></td></tr></table></figure></p>
-<h3 id="檢查"><a href="#檢查" class="headerlink" title="檢查"></a>檢查</h3><p>使用 phpinfo() 看看 xdebug 是否開啟了，KEY 是否正確。</p>
+<h2 id="檢查-xdebug-是否正確安裝"><a href="#檢查-xdebug-是否正確安裝" class="headerlink" title="檢查 xdebug 是否正確安裝"></a>檢查 xdebug 是否正確安裝</h2><p>使用 phpinfo() 看看 xdebug 是否開啟了，KEY 是否正確。</p>
 <h2 id="設定-PhpStorm"><a href="#設定-PhpStorm" class="headerlink" title="設定 PhpStorm"></a>設定 PhpStorm</h2><p>Preferences -&gt; Languages &amp; Frameworks -&gt; PHP -&gt; Debug</p>
 <h3 id="設定-Debug"><a href="#設定-Debug" class="headerlink" title="設定 Debug"></a>設定 Debug</h3><p><img src="https://lh3.googleusercontent.com/pw/ACtC-3cCCLmxAhM5QtNpfVC71FWOibufi_A81pC0gGsrxzDV1SY3FzVKxrLq8PXfFmmZEQuf1K1Y6GAd384Spf2HodXMHc5qOeHJBHm_1xd4UIJgjIDu6BTbDELfj8oM-hf7JDK47k4Z75-9qCgaYVLgxvkDKA=w1574-h1020-no?authuser=0" alt=""></p>
 <h3 id="設定-DBGp-Proxy"><a href="#設定-DBGp-Proxy" class="headerlink" title="設定 DBGp Proxy"></a>設定 DBGp Proxy</h3><p><img src="https://lh3.googleusercontent.com/pw/ACtC-3dl-GR76w6TOTmytmvxZJuMkYecSHPl_8nQjQR7ysFuh101EFrNjNohPct56rWN1ZaatjU8RhADSJ4A1fLpA95NjMtP9kmmCdDMoo1T5fq66TYqLK2e-67KdZR9z9z4icPu1rGvdYWeW3hgFZA-c4wieA=w1418-h742-no?authuser=0" alt=""></p>
@@ -113,9 +113,9 @@
 <p><img src="https://lh3.googleusercontent.com/pw/ACtC-3eeSy-LSxwDOaZBIsmKwbFe0RqNRXlddL9Su8BgiKp92nfTrT4fqh2y5pdgJH4p05glLC-SJrYcyF4MfIM7xCuyV9p5MonN9GEpbwBqzdk1d68O44-cjcCr1SiF3iXU-vskw8cA9io8VHBVBLwGjeFiuA=w972-h56-no?authuser=0" alt=""></p>
 <p>選擇 Templates -&gt; PHP Remote debug，然後照下圖設定<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fvIUisyhzCQYt6aO7pUf3bf_iHYJz3Z8VCCHxxH27UhmVWWSNN1qwziZoF0nRU8eXM7gsYaBepYjNZoFWz-_u79_1yyFREPyi7GpYyrByvPj0zFXXdplbKBF7qiy6sf-Ml8BkPPagFKspnWUXKN23seA=w1980-h988-no?authuser=0" alt=""></p>
 <p>點選 <code>Validate</code> debugger configuration on the Web Server 會出現下圖，然後照著設定<br>注意： 如果是 laravel 專案， Path to create validation script 路徑結尾要設到 public<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eWpJUpHvprbRD77AyDAus7OqC423AJT5J_3f8b7OIO7k9sgjMnv5unvJC-vltqLKEORhMWdM21WDQhhKD0PwCU0uodi5X3UpB8lZ_Z8WnJcAS1TLPPJrsMJ90CMVxkQ8xZLO_Qxc1gT0he5vogRXaFGQ=w1104-h952-no?authuser=0" alt=""></p>
-<p>設定完後按 VALIDATE，如果沒有什麼錯誤訊息，應該就是可以用了。<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eAHenJiCpU_rOwHp24zD2_jXfE07AFoymBEUEnJWFw1sXL5yDH9zkc6keUr5aQO5GJLsHV2nHUYhvmq1WdtpXvssSAUGULpr0bKdbCTpLYgOVv1afnxU2LxYQgvhmjRA48qPFK5fls2YAEbm2UIKx2dQ=w1098-h946-no?authuser=0" alt=""></p>
+<p>設定完後按 <code>VALIDATE</code>，如果沒有什麼錯誤訊息，應該就是可以用了。<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3eAHenJiCpU_rOwHp24zD2_jXfE07AFoymBEUEnJWFw1sXL5yDH9zkc6keUr5aQO5GJLsHV2nHUYhvmq1WdtpXvssSAUGULpr0bKdbCTpLYgOVv1afnxU2LxYQgvhmjRA48qPFK5fls2YAEbm2UIKx2dQ=w1098-h946-no?authuser=0" alt=""></p>
 <h2 id="幾個遇過的坑點"><a href="#幾個遇過的坑點" class="headerlink" title="幾個遇過的坑點"></a>幾個遇過的坑點</h2><p>基本上上面的設定都是測試可用的作法，下面算是曾經遇過的 issue，有遇到再看就好了。</p>
-<h3 id="port-的設定ㄋ"><a href="#port-的設定ㄋ" class="headerlink" title="port 的設定ㄋ"></a>port 的設定ㄋ</h3><p>php-fpm 的 port 為 9000，xdebug port 就不能設定為 9000 , 所以改設 9001，<br>參考：<a href="https://thecodingmachine.io/configuring-xdebug-phpstorm-docker" target="_blank" rel="noopener">DEBUGGING PHP (WEB AND CLI) WITH XDEBUG USING DOCKER AND PHPSTORM</a>。</p>
+<h3 id="port-的設定"><a href="#port-的設定" class="headerlink" title="port 的設定"></a>port 的設定</h3><p>php-fpm 的 port 為 9000，xdebug port 就不能設定為 9000 , 所以改設 9001，<br>參考：<a href="https://thecodingmachine.io/configuring-xdebug-phpstorm-docker" target="_blank" rel="noopener">DEBUGGING PHP (WEB AND CLI) WITH XDEBUG USING DOCKER AND PHPSTORM</a>。</p>
 <h3 id="remote-connect-back-的設定"><a href="#remote-connect-back-的設定" class="headerlink" title="remote_connect_back 的設定"></a>remote_connect_back 的設定</h3><p>這個設定要改成 0，就是要關掉啦。</p>
 <p>官網有說明這個參數的用途，基本上就是多人開發時使用：</p>
 <blockquote>
@@ -126,13 +126,22 @@
 </blockquote>
 <p>更多訊息可以看官網<a href="https://xdebug.org/docs/all_settings#remote_connect_back" target="_blank" rel="noopener">說明</a>。</p>
 <p>更多介紹可以看<a href="http://guojianxiang.com/posts/2015-09-06-PHP_Debug_Tool-Xdebug.html" target="_blank" rel="noopener">PHP调试工具-Xdebug</a></p>
+<h3 id="composer-超慢"><a href="#composer-超慢" class="headerlink" title="composer 超慢"></a>composer 超慢</h3><p>image build 完重啟後，composer install 一直無反應 ，連 composer -v 也是如此，以為是 container 有問題，所以反覆刪掉 container 和 image，反覆重 build 重啟…。 </p>
+<p>直到放了一段很長時間後，composer 才開始跑，並且在跑之前有這樣的訊息:</p>
+<pre><code>1571381068.831664: There was a problem sending 289 bytes on socket 4: Broken pipe
+</code></pre><p>經過超多次測試，確定是開了 debug 造成 composer 超慢，也嘗試了超多種設定，目前還沒有找到一個最佳解。<br>目前暫時的做法是：</p>
+<ol>
+<li>docker 的 xdebug 設定開啟 </li>
+<li>然後 container 啟動後以 root 權限進入 workspace -&gt; vi/etc/php/7.2/cli/con.d/20-xdebug.ini 註解掉裡面的設定，<br>這樣可以暫時讓兩個服務都能使用…</li>
+</ol>
+<p><code>UPDATE</code>: 20200708 再次測試，已經沒有這個問題。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://learnku.com/articles/24389" target="_blank" rel="noopener">Laradock 使用 PhpStorm Debug 代码</a></p>
 <p><a href="https://segmentfault.com/a/1190000011387666" target="_blank" rel="noopener">使用 Xdebug 在 PHPStorm 中调试 PHP 程序(框架/原生均适用)</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcdhktsw0059uly54fws2p74" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcdi0tcy000m60y58zkqotmv" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/#disqus_thread" class="article-comment-link">Comments</a>
       
