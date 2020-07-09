@@ -88,11 +88,11 @@
 <h2 id="帳號權限的設定"><a href="#帳號權限的設定" class="headerlink" title="帳號權限的設定"></a>帳號權限的設定</h2><p>基本格式：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span>,<span class="keyword">INSERT</span>,<span class="keyword">UPDATE</span>,<span class="keyword">DELETE</span> <span class="keyword">ON</span> DB_NAME.TABLE_NAME <span class="keyword">TO</span> <span class="string">'user_name'</span>@<span class="string">'host'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'password'</span>;</span><br></pre></td></tr></table></figure>
 <p>host 可以是 ‘localhost’ 或是 ‘%’ 表示所有 ip</p>
-<p>看一些範例：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 設定 root 可以訪問資料庫 test 的權限，密碼為空</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> test.* <span class="keyword">TO</span> <span class="string">'root'</span>@<span class="string">'%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定 root 訪問全部資料庫的權限，* 表示所有資料庫</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'root'</span>@<span class="string">'%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定使用者 tracy 訪問所有資料庫的權限</span></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定 ip 的訪問權限</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'tracy'</span>@<span class="string">'10.2.1.11'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'mypwd'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>看一些範例：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 設定 root 可以訪問資料庫 test 的權限，密碼為空</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> test.* <span class="keyword">TO</span> <span class="string">'root'</span>@<span class="string">'%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定 root 訪問全部資料庫的權限，* 表示所有資料庫</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'root'</span>@<span class="string">'%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定使用者 tracy 訪問所有資料庫的權限</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'tracy'</span>@<span class="string">'localhost'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'mypwd'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定 ip 的訪問權限</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'tracy'</span>@<span class="string">'10.2.1.11'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'mypwd'</span>;</span><br></pre></td></tr></table></figure></p>
 <p>改完權限，別忘了更新授權<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure></p>
 <p>移除 MySQL 帳號權限</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">REVOKE</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">FROM</span> <span class="string">'tracy'</span>@<span class="string">'localhost'</span>;</span><br><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure>
-<p>刪除 user<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">USER</span> ‘testuser’@’localhost’;</span><br></pre></td></tr></table></figure></p>
+<p>刪除 user<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">USER</span> <span class="string">'testuser'</span>@<span class="string">'localhost'</span>;</span><br></pre></td></tr></table></figure></p>
 <h3 id="權限列表"><a href="#權限列表" class="headerlink" title="權限列表"></a>權限列表</h3><p>僅列幾個權限，詳細可參考 <a href="https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html" target="_blank" rel="noopener">官網：6.2.2 Privileges Provided by MySQL</a></p>
 <table>
 <thead>
@@ -142,7 +142,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/09/useful-mysql-command/" data-id="ckcexo3ul005a5gy5m1ldexpr" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/09/useful-mysql-command/" data-id="ckcexsahu005f99y5a28lplnb" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/09/useful-mysql-command/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -212,7 +212,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/09/my-on-board-kit/" data-id="ckcexo3u6004q5gy50imsg4j1" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/09/my-on-board-kit/" data-id="ckcexsahe004v99y54wp01ybp" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/09/my-on-board-kit/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -295,7 +295,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcexo3ud004y5gy5jnzdhs8i" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcexsahk005099y5hnr1fm10" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -395,7 +395,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/" data-id="ckcexo3tp00405gy5debrwsyc" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/" data-id="ckcexsagr004099y5vaks4z0d" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -479,7 +479,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckcexo3tr00455gy5mfkyhw51" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckcexsagu004699y5jhdntta8" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -536,7 +536,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckcexo3ut005m5gy57opqc6td" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckcexsahy005m99y5tb80fu2y" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -650,7 +650,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckcexo3u4004m5gy51duasjhm" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckcexsah8004l99y5v7nl43jr" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -754,7 +754,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckcexo3us005k5gy56mwuegqq" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckcexsahw005j99y5y1mexb9k" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -829,7 +829,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckcexo3tt00495gy5ttbtkxyu" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckcexsah3004999y5id261b6b" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -886,7 +886,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckcexo3ts00475gy5qd9cn93j" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckcexsah4004b99y5u6p21ssi" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
