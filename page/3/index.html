@@ -62,6 +62,57 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-set-virtual-host-in-apache" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/06/set-virtual-host-in-apache/" class="article-date">
+  <time datetime="2019-04-06T01:23:28.000Z" itemprop="datePublished">2019-04-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/06/set-virtual-host-in-apache/">在 apache 設定 virtual host</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>在同一台 server 上運行多個服務，例如 HTTP、FTP、EMAIL 等。</p>
+<h3 id="設定檔位置"><a href="#設定檔位置" class="headerlink" title="設定檔位置"></a>設定檔位置</h3><p>傳統設定位置為<code>/etc/httpd/conf/httpd.conf</code>  </p>
+<p>apache2 的設定位置為　<code>/etc/apache2/sites-available/000-default.conf</code><br>或是在 <code>/etc/apache2/sites-available</code> 下建立一個專用的設定檔，並 link 到　<code>/etc/apache2/sites-enabled</code>。<br>預設情況是　<code>/etc/apache2/sites-enabled/*.conf</code> 都會被使用，詳細內容可以參見　<code>/etc/apach2/apach2.conf</code>。</p>
+<p>修改完設定後重起服務，才會生效。</p>
+<h2 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h2><h3 id="網址名稱對應（Name-based）"><a href="#網址名稱對應（Name-based）" class="headerlink" title="網址名稱對應（Name-based）"></a><code>網址名稱對應（Name-based）</code></h3><p>在同一台機器以及 ip 下，架設不同的網站。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ServerName ilovecats.com</span><br><span class="line">    DocumentRoot &quot;/www/cat&quot;</span><br><span class="line">&lt;/VirtualHost&gt;</span><br><span class="line"></span><br><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ServerName ilovedogs.com</span><br><span class="line">    DocumentRoot &quot;/www/dogs&quot;</span><br><span class="line">&lt;/VirtualHost&gt;</span><br><span class="line"></span><br><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ServerName api.ilovedogs.com</span><br><span class="line">    DocumentRoot &quot;/www/api/dogs&quot;</span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="IP位址對應（IP-based）"><a href="#IP位址對應（IP-based）" class="headerlink" title="IP位址對應（IP-based）"></a><code>IP位址對應（IP-based）</code></h3><p>在同一台機器但不同 ip 下，架設不同的網站。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost 192.168.1.123:80&gt;</span><br><span class="line">    ServerName ilovecats.com</span><br><span class="line">    DocumentRoot &quot;/www/cat&quot;</span><br><span class="line">&lt;/VirtualHost&gt;</span><br><span class="line"></span><br><span class="line">&lt;VirtualHost 123.123.123.123:8888&gt;</span><br><span class="line">    ServerName ilovedog.com</span><br><span class="line">    DocumentRoot &quot;/www/dog&quot;</span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://zh.wikipedia.org/zh-tw/%E8%99%9A%E6%8B%9F%E4%B8%BB%E6%9C%BA" target="_blank" rel="noopener">https://zh.wikipedia.org/zh-tw/%E8%99%9A%E6%8B%9F%E4%B8%BB%E6%9C%BA</a></p>
+<p><a href="https://notfalse.net/53/http-virtual-host" target="_blank" rel="noopener">https://notfalse.net/53/http-virtual-host</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/" data-id="ckcexo3ub004v5gy5tb319rue" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2019/04/06/set-virtual-host-in-apache/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+  
+</article>
+
+
+  
     <article id="post-useful-git-command" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/04/useful-git-command/" class="article-date">
@@ -239,7 +290,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="ckce7r7a5000u1ny5a84ar2cw" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/04/useful-git-command/" data-id="ckcexo3uq005f5gy5j01wrso1" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/04/useful-git-command/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -381,7 +432,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="ckce7r7b9002d1ny5xby92g9e" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/03/laravel-api/" data-id="ckcexo3un005d5gy5djrjkhva" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/03/laravel-api/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -491,7 +542,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="ckce7r79f00011ny5w2rmdfye" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/" data-id="ckcexo3ty004e5gy5zf9zqysd" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/03/02/how-to-set-timezone-in-ubuntu-and-php-and-mysql/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -552,7 +603,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="ckce7r7ak001b1ny5mk7xw8jj" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/03/02/singleton/" data-id="ckcexo3uk00555gy5ma1dm1qa" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/03/02/singleton/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -585,7 +636,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PhpStorm/">PhpStorm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/env/">env</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kit/">kit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PhpStorm/">PhpStorm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/env/">env</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kit/">kit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
     </div>
   </div>
 
@@ -595,7 +646,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/env/" style="font-size: 10px;">env</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kit/" style="font-size: 10px;">kit</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
+      <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/env/" style="font-size: 10px;">env</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kit/" style="font-size: 10px;">kit</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 13.33px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
     </div>
   </div>
 
@@ -617,6 +668,10 @@
       <ul>
         
           <li>
+            <a href="/2020/07/09/useful-mysql-command/">常用的 MySQL 指令</a>
+          </li>
+        
+          <li>
             <a href="/2020/07/09/my-on-board-kit/">On-board Kit</a>
           </li>
         
@@ -630,10 +685,6 @@
         
           <li>
             <a href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
-          </li>
-        
-          <li>
-            <a href="/2019/07/14/where-to-store-json-web-token/">JWT 到底要存哪裡？</a>
           </li>
         
       </ul>

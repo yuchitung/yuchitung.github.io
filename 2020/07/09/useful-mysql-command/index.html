@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>常用的 MySQL 指令 | Yuchi 的學習筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="查看 MySQL 帳號的權限123456789101112# 連線mysql -u root -p# 列出所有 userSELECT user,host FROM mysql.user;# 列出目前 user 的權限SHOW GRANTS;# 列出指定 user 的權限SHOW GRANTS FOR &apos;user&apos;@&apos;host&apos;;SHOW GRANTS FOR &apos;root&apos;@&apos;localhost&apos;;">
+<meta name="keywords" content="db,mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常用的 MySQL 指令">
+<meta property="og:url" content="https://yuchitung.github.io/2020/07/09/useful-mysql-command/index.html">
+<meta property="og:site_name" content="Yuchi 的學習筆記">
+<meta property="og:description" content="查看 MySQL 帳號的權限123456789101112# 連線mysql -u root -p# 列出所有 userSELECT user,host FROM mysql.user;# 列出目前 user 的權限SHOW GRANTS;# 列出指定 user 的權限SHOW GRANTS FOR &apos;user&apos;@&apos;host&apos;;SHOW GRANTS FOR &apos;root&apos;@&apos;localhost&apos;;">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-07-09T15:15:26.268Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="常用的 MySQL 指令">
+<meta name="twitter:description" content="查看 MySQL 帳號的權限123456789101112# 連線mysql -u root -p# 列出所有 userSELECT user,host FROM mysql.user;# 列出目前 user 的權限SHOW GRANTS;# 列出指定 user 的權限SHOW GRANTS FOR &apos;user&apos;@&apos;host&apos;;SHOW GRANTS FOR &apos;root&apos;@&apos;localhost&apos;;">
+  
+    <link rel="alternate" href="/atom.xml" title="Yuchi 的學習筆記" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Yuchi 的學習筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://yuchitung.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-useful-mysql-command" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/07/09/useful-mysql-command/" class="article-date">
+  <time datetime="2020-07-09T15:15:26.000Z" itemprop="datePublished">2020-07-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      常用的 MySQL 指令
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="查看-MySQL-帳號的權限"><a href="#查看-MySQL-帳號的權限" class="headerlink" title="查看 MySQL 帳號的權限"></a>查看 MySQL 帳號的權限</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 連線</span></span><br><span class="line">mysql -u root -p</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出所有 user</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>,host <span class="keyword">FROM</span> mysql.user;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出目前 user 的權限</span></span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">GRANTS</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出指定 user 的權限</span></span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">GRANTS</span> <span class="keyword">FOR</span> <span class="string">'user'</span>@<span class="string">'host'</span>;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">GRANTS</span> <span class="keyword">FOR</span> <span class="string">'root'</span>@<span class="string">'localhost'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="帳號權限的設定"><a href="#帳號權限的設定" class="headerlink" title="帳號權限的設定"></a>帳號權限的設定</h2><p>基本格式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span>,<span class="keyword">INSERT</span>,<span class="keyword">UPDATE</span>,<span class="keyword">DELETE</span> <span class="keyword">ON</span> DB_NAME.TABLE_NAME <span class="keyword">TO</span> <span class="string">'user_name'</span>@<span class="string">'host'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'password'</span>;</span><br></pre></td></tr></table></figure>
+<p>host 可以是 ‘localhost’ 或是 ‘%’ 表示所有 ip</p>
+<p>看一些範例：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 設定 root 可以訪問資料庫 test 的權限，密碼為空</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> test.* <span class="keyword">TO</span> <span class="string">'root'</span>@<span class="string">'%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定 root 訪問全部資料庫的權限，* 表示所有資料庫</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'root'</span>@<span class="string">'%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 設定使用者 tracy 訪問所有資料庫的權限</span></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定 ip 的訪問權限</span></span><br><span class="line"><span class="keyword">GRANT</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'tracy'</span>@<span class="string">'10.2.1.11'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'mypwd'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>改完權限，別忘了更新授權<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure></p>
+<p>移除 MySQL 帳號權限</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">REVOKE</span> ALL <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">FROM</span> <span class="string">'tracy'</span>@<span class="string">'localhost'</span>;</span><br><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure>
+<p>刪除 user<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">USER</span> ‘testuser’@’localhost’;</span><br></pre></td></tr></table></figure></p>
+<h3 id="權限列表"><a href="#權限列表" class="headerlink" title="權限列表"></a>權限列表</h3><p>僅列幾個權限，詳細可參考 <a href="https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html" target="_blank" rel="noopener">官網：6.2.2 Privileges Provided by MySQL</a></p>
+<table>
+<thead>
+<tr>
+<th>權限</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GRANT OPTION</td>
+<td>可把本帳號的許可權授予其它使用者</td>
+</tr>
+<tr>
+<td>LOCK TABLES</td>
+<td>鎖定指定資料表</td>
+</tr>
+<tr>
+<td>SHOW DATABASES</td>
+<td>可執行 SHOW DATABASES 指令</td>
+</tr>
+<tr>
+<td>CREATE</td>
+<td>建立資料庫和資料表</td>
+</tr>
+<tr>
+<td>INDEX</td>
+<td>建立或刪除索引</td>
+</tr>
+<tr>
+<td>ALL</td>
+<td>所有許可權，但不包括 GRANT</td>
+</tr>
+<tr>
+<td>USAGE</td>
+<td>無許可權許可權</td>
+</tr>
+</tbody>
+</table>
+<h2 id="遠端連線-MySQL"><a href="#遠端連線-MySQL" class="headerlink" title="遠端連線 MySQL"></a>遠端連線 MySQL</h2><p>在 MySQL 設定裡註解掉 bind-address。</p>
+<p>設定檔的位置 /etc/mysql/my.cnf 或是 /etc/mysql/mysql.conf.d</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># bind-address = 127.0.0.1</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://support.rackspace.com/how-to/mysql-connect-to-your-database-remotely/" target="_blank" rel="noopener">Connect to a MySQL database remotely</a></p>
+<p><a href="https://www.ewdna.com/2011/09/mysqlmessage-from-server-host-xxx-is.html" target="_blank" rel="noopener">無法遠端連接MySQL：message from server: “Host xxx is not allowed to connect to this MySQL server”</a></p>
+<p><a href="https://blog.longwin.com.tw/2009/06/query-mysql-show-grant-permission-2009/" target="_blank" rel="noopener">查詢 MySQL 對 此帳號 開放(GRANT)哪些權限</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2020/07/09/useful-mysql-command/" data-id="ckcexo3ul005a5gy5m1ldexpr" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2020/07/09/useful-mysql-command/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/db/">db</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+    <section id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      </div>
+    </section>
+  
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/07/09/my-on-board-kit/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">On-board Kit</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PhpStorm/">PhpStorm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/env/">env</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kit/">kit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/env/" style="font-size: 10px;">env</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kit/" style="font-size: 10px;">kit</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 13.33px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">July 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/07/09/useful-mysql-command/">常用的 MySQL 指令</a>
+          </li>
+        
+          <li>
+            <a href="/2020/07/09/my-on-board-kit/">On-board Kit</a>
+          </li>
+        
+          <li>
+            <a href="/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/">使用 Laradock 和 PhpStorm 設定 xdebug</a>
+          </li>
+        
+          <li>
+            <a href="/2020/07/06/cgi-fastcgi-and-phpfpm/">CGI、FastCGI 和 PHP-FPM</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Yuchi Tung<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'yuchi-blog';
+  
+  var disqus_url = 'https://yuchitung.github.io/2020/07/09/useful-mysql-command/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
