@@ -62,6 +62,63 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-dependency-inversion-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/24/dependency-inversion-principle/" class="article-date">
+  <time datetime="2019-06-24T14:37:28.000Z" itemprop="datePublished">2019-06-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>Depend on abstractions, not on concretions.<br>– <cite>Robert C. Martin</cite></p>
+</blockquote>
+<p>依賴反轉原則，全名 <strong>Dependency Inversion Principle</strong>，簡稱 <strong>DIP</strong>。  </p>
+<h2 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h2><p>高階模組不應該依賴低階模組，兩者應該要依賴其<code>抽象</code>，抽象不要依賴細節，細節要依賴抽象。<br>不要把程式碼寫死某種實作上。</p>
+<h2 id="秘訣"><a href="#秘訣" class="headerlink" title="秘訣"></a>秘訣</h2><ul>
+<li>互動的部分交給<code>抽象類別</code>(abstract class)或<code>介面</code>(interface)</li>
+<li>會改變的實作，就放到子類別裡面</li>
+</ul>
+<h2 id="提醒"><a href="#提醒" class="headerlink" title="提醒"></a>提醒</h2><p>設計階段就可以先以抽象層次的互動來避開這個問題<br>抽象層次不要太高，以免無法對焦於真正關注的類別特徵</p>
+<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>來看個例子。<br>有一位計程車司機，他開著 Toyota 的車來工作。<br>但如果有天他換車了，換開 Nissan，原本的 drive function 就不能用了…</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaxiDriver</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">drive</span><span class="params">(Toyota $toyota)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$driver = <span class="keyword">new</span> TaxiDriver();</span><br><span class="line">$driver-&gt;drive(<span class="keyword">new</span> Toyota);</span><br></pre></td></tr></table></figure>
+<p>那來改一改吧！<br>不要寫死成開 Toyota，改成開車就好了(<code>依賴抽象</code>），這樣隨時換開什麼車都可以。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> car</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> $name;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Toyota</span> <span class="keyword">extends</span> <span class="title">Car</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Nissan</span> <span class="keyword">extends</span> <span class="title">Car</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TexiDriver</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">drive</span><span class="params">(Car $car)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$taxiDriver = <span class="keyword">new</span> TexiDriver();</span><br><span class="line">$taxiDriver-&gt;drive(<span class="keyword">new</span> Toyota);</span><br><span class="line">$taxiDriver-&gt;drive(<span class="keyword">new</span> Nissan);</span><br></pre></td></tr></table></figure>
+<p>然後我們可以發現，如果需要的話，計程車司機(TexiDriver)還可以繼承人(Human)類別，然後 drive function 抽出去成介面(interface)，TexiDriver 再實作 driver 介面，都可以再向上抽象，增加使用的彈性。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://youtu.be/SLCajYNcThE?t=5165" target="_blank" rel="noopener">PHP 也有 Day #19 - PHP 返樸歸真系列之從實例學設計模式 by 大澤木小鐵 (Jace Ju)​</a><br><a href="https://clouding.city/php/solid/" target="_blank" rel="noopener">物件導向設計原則 SOLID</a><br><a href="http://teddy-chen-tw.blogspot.com/2014/04/solid.html" target="_blank" rel="noopener">SOLID：五則皆變</a><br><a href="http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod" target="_blank" rel="noopener">The Principles of OOD</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckcg19mbe004diay5sd4woiy1" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
+
+    </footer>
+  </div>
+  
+  
+</article>
+
+
+  
     <article id="post-interface-segregation-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/06/24/interface-segregation-principle/" class="article-date">
@@ -105,7 +162,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckcexwbmy0008coy544ar89t4" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/" data-id="ckcg19mbh004iiay5uo5osw3w" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/interface-segregation-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -160,7 +217,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckcexwbn0000acoy5gq6tk9kt" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/" data-id="ckcg19mbl004niay5q6kgs012" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/least-knowledge-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -220,7 +277,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckcexwbn3000fcoy56s7dsiyi" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/" data-id="ckcg19mbl004piay56r1t9b0x" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/liskov-substitution-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -286,7 +343,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ckcexwbnb000ocoy5e06kir0z" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/open-closed-principle/" data-id="ckcg19mbo004wiay51eblyf2b" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/open-closed-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -346,7 +403,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="ckcexwbnd000vcoy5lmg1s506" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/" data-id="ckcg19mbv0059iay5vbm9uemf" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/single-responsibility-principle/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -398,7 +455,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="ckcexwbne000wcoy5s6ud23gh" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/24/solid/" data-id="ckcg19mbw005eiay538ntxida" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/24/solid/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -472,7 +529,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/" data-id="ckcexwbnb000qcoy5hob66z1m" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/" data-id="ckcg19mbq0051iay5f6ulmxzm" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/15/mvc-and-mvvm/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -604,7 +661,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="ckcexwbn1000ccoy5y8yab9ot" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/" data-id="ckcg19mbi004kiay5jqaabhqf" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/15/identify-users-with-cookie-and-session/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -694,57 +751,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="ckcexwbmm0000coy56tiv9x8h" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/04/08/crontab-setting/" data-id="ckcg19mb90043iay5lg4ysubp" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/04/08/crontab-setting/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/job/">job</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
-
-    </footer>
-  </div>
-  
-  
-</article>
-
-
-  
-    <article id="post-wait-until-all-jquery-ajax-calls-are-done" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" class="article-date">
-  <time datetime="2019-04-06T01:36:22.000Z" itemprop="datePublished">2019-04-06</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/">等待所有 ajax 請求完成</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>用 jQuery 實現 promise，待所有 ajax 執行完後才執行指定操作</p>
-<p>notice: 所有 ajax call 為非同步執行</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">demonstrate</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> urls = [<span class="string">"url_1"</span>, <span class="string">"url_2"</span>, <span class="string">"url_3"</span>];</span><br><span class="line"></span><br><span class="line">  callAjaxRequsts(urls)</span><br><span class="line">    .done(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"all done"</span>);</span><br><span class="line">    &#125;)</span><br><span class="line">    .fail(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">"error"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">callAjaxRequsts</span>(<span class="params">urls</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> requests = $.map(urls, <span class="function"><span class="keyword">function</span>(<span class="params">value, index</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> $</span><br><span class="line">      .ajax(&#123;</span><br><span class="line">        url: value,</span><br><span class="line">        type: <span class="string">"post"</span></span><br><span class="line">      &#125;)</span><br><span class="line">      .done(<span class="function"><span class="keyword">function</span>(<span class="params">response</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(response);</span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> $.when.apply($, requests);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://stackoverflow.com/questions/23300168/deferred-promise-ajax-loop-then-never-happens" target="_blank" rel="noopener">https://stackoverflow.com/questions/23300168/deferred-promise-ajax-loop-then-never-happens</a><br><a href="https://stackoverflow.com/questions/3709597/wait-until-all-jquery-ajax-requests-are-done" target="_blank" rel="noopener">https://stackoverflow.com/questions/3709597/wait-until-all-jquery-ajax-requests-are-done</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/" data-id="ckcexwbnj0016coy5oge68zdm" class="article-share-link">Share</a>
-      
-        <a href="https://yuchitung.github.io/2019/04/06/wait-until-all-jquery-ajax-calls-are-done/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jQuery/">jQuery</a></li></ul>
 
     </footer>
   </div>
@@ -772,7 +784,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PhpStorm/">PhpStorm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/env/">env</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kit/">kit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PhpStorm/">PhpStorm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/env/">env</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kit/">kit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
     </div>
   </div>
 
@@ -782,7 +794,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/env/" style="font-size: 10px;">env</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kit/" style="font-size: 10px;">kit</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 13.33px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
+      <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/env/" style="font-size: 10px;">env</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kit/" style="font-size: 10px;">kit</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 13.33px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
     </div>
   </div>
 
@@ -804,6 +816,10 @@
       <ul>
         
           <li>
+            <a href="/2020/07/10/useful-docker-command/">常用 docker 指令</a>
+          </li>
+        
+          <li>
             <a href="/2020/07/09/useful-mysql-command/">常用的 MySQL 指令</a>
           </li>
         
@@ -817,10 +833,6 @@
         
           <li>
             <a href="/2020/07/06/cgi-fastcgi-and-phpfpm/">CGI、FastCGI 和 PHP-FPM</a>
-          </li>
-        
-          <li>
-            <a href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
           </li>
         
       </ul>

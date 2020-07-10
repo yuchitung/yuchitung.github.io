@@ -62,6 +62,66 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-useful-docker-command" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/07/10/useful-docker-command/" class="article-date">
+  <time datetime="2020-07-10T09:44:03.000Z" itemprop="datePublished">2020-07-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/10/useful-docker-command/">常用 docker 指令</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="基本資訊"><a href="#基本資訊" class="headerlink" title="基本資訊"></a>基本資訊</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 顯示 docker 的資訊</span></span><br><span class="line">docker info</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看版本</span></span><br><span class="line">docker -v</span><br><span class="line">docker-compose -v</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 container 佔用資源狀態</span></span><br><span class="line">docker stats</span><br></pre></td></tr></table></figure>
+<h2 id="小範例"><a href="#小範例" class="headerlink" title="小範例"></a>小範例</h2><p>假設本機裝好了 docker，但是沒有下載任何的 image，讓我們來跑幾個指令看看如何下載 image，以及啟動容器</p>
+<p>範例 1<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 從 docker hub 下載 hello-word image</span></span><br><span class="line">docker pull hello-world</span><br><span class="line"></span><br><span class="line"><span class="comment"># 啟動 hello world cotainer</span></span><br><span class="line">docker run hello-world</span><br></pre></td></tr></table></figure></p>
+<p>範例 2<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 這個指令先檢查本機有沒有 ubuntu image，沒有的話會先 pull 再 run</span></span><br><span class="line"><span class="comment"># -i, --interactive (互動模式)</span></span><br><span class="line"><span class="comment"># -t, --tty         (配置一個終端機)</span></span><br><span class="line">docker run -it ubuntu bash</span><br><span class="line"></span><br><span class="line">docker run ubuntu /bin/<span class="built_in">echo</span> <span class="string">"Hi, Ubuntu"</span> </span><br><span class="line"></span><br><span class="line"><span class="comment"># 也可以一開始在背景執行，後面再用 exec 指令進入環境</span></span><br><span class="line">docker run -d ubuntu </span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> -it  CONTAINER_ID bash</span><br></pre></td></tr></table></figure></p>
+<h2 id="Image-相關"><a href="#Image-相關" class="headerlink" title="Image 相關"></a>Image 相關</h2><p>build image<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改 docker-compose.yml 後 rebuild 服務，使用 --no-cache 不使用快取</span></span><br><span class="line">docker-compose build SERVICE_NAME</span><br><span class="line"></span><br><span class="line">docker-compose build --no-cache workspace</span><br></pre></td></tr></table></figure></p>
+<p>查看 image<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看機器上有的 image</span></span><br><span class="line">docker images</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 image 的詳細訊息，會返回一個 json 格式</span></span><br><span class="line">docker inspect IMAGE_ID</span><br></pre></td></tr></table></figure></p>
+<p>刪除 image<br>注意：必須先刪除有使用這個 image 的 container 才能刪除 image<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 刪除指定 image，</span></span><br><span class="line">docker rmi IMAGE_ID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到無用的 images</span></span><br><span class="line">docker images --filter <span class="string">"dangling=true"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 刪除無用的 images</span></span><br><span class="line">docker rmi $(docker images -f <span class="string">"dangling=true"</span> -q)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 刪除名字出現特定字串的 image</span></span><br><span class="line">docker rmi $(docker images |grep <span class="string">'k8s'</span>)</span><br></pre></td></tr></table></figure></p>
+<h2 id="Container-相關"><a href="#Container-相關" class="headerlink" title="Container 相關"></a>Container 相關</h2><p>查看 container<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看運行中的 container</span></span><br><span class="line">docker ps</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看所有 container， 包含沒有啟動的(STATUS=exited)</span></span><br><span class="line">docker ps -a</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看停止的 container</span></span><br><span class="line">docker ps -f <span class="string">"status=exited"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 container 的詳細訊息，會返回一個 json 格式</span></span><br><span class="line">docker inspect CONTAINER_ID</span><br><span class="line">docker inspect CONTAINER_NAME</span><br></pre></td></tr></table></figure></p>
+<p>啟動或停止 container<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 啟動 container</span></span><br><span class="line">docker start CONTAINER_ID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重啟 container，如果 container 本身是 stop 狀態，效果同 start</span></span><br><span class="line">docker restart CONTAINER_ID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止 container</span></span><br><span class="line">docker stop CONTAINER_ID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止在運作的所有 container</span></span><br><span class="line">docker stop $(docker ps -a -q)</span><br></pre></td></tr></table></figure></p>
+<p>或是也可以用 docker-compose 一次啟動多個 container<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 docker-compose 啟動服務，-d 為在背景執行</span></span><br><span class="line">docker-compose up -d apache2 mysql</span><br><span class="line">docker-compose up nginx mysql redis</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 進入 container</span></span><br><span class="line">docker-compose <span class="built_in">exec</span> --use=root apache2 bash</span><br><span class="line">docker-compose <span class="built_in">exec</span> --use=laradock workspace bash</span><br><span class="line">docker-compose <span class="built_in">exec</span> --user=root mysql bash</span><br><span class="line">docker-compose <span class="built_in">exec</span> --user=root redis bash</span><br></pre></td></tr></table></figure>
+<p>刪除 container<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 刪除指定的 container</span></span><br><span class="line">docker rm CONTAINER_ID</span><br><span class="line"></span><br><span class="line"><span class="comment"># 刪除所有 container</span></span><br><span class="line">docker rm $(docker ps -a -q)</span><br></pre></td></tr></table></figure></p>
+<p>刪除所有 image &amp; container<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose down</span><br></pre></td></tr></table></figure></p>
+<h2 id="log-相關"><a href="#log-相關" class="headerlink" title="log 相關"></a>log 相關</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看某個服務的 log </span></span><br><span class="line">docker-compose logs  SERVICE_NAME       </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看 nginx 的即時 log。好用，尤其是在啟動服務時使用了 -d 背景執行，看不到服務的執行狀況時</span></span><br><span class="line">docker-compose logs -f nginx   </span><br><span class="line"></span><br><span class="line"><span class="comment"># 看倒數 5 行的 log</span></span><br><span class="line">docker-compose logs --tail 5 nginx    </span><br><span class="line"></span><br><span class="line"><span class="comment"># 也可以用 docker 指令看倒數 5 分鐘的 log，但對象要是 container id</span></span><br><span class="line">docker logs --since 5m  CONTAINER_ID</span><br></pre></td></tr></table></figure>
+<h2 id="備份和還原-mysql-container-的資料"><a href="#備份和還原-mysql-container-的資料" class="headerlink" title="備份和還原 mysql container 的資料"></a>備份和還原 mysql container 的資料</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Backup，以 mysqldump 把資料庫備份出來，檔案會存在當前目錄</span></span><br><span class="line">docker <span class="built_in">exec</span> CONTAINERI_ID /usr/bin/mysqldump -u root --password=root DATABASE_NAME &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># Restore</span></span><br><span class="line">cat backup.sql | docker <span class="built_in">exec</span> -i CONTAINER_ID /usr/bin/mysql -u root --password=root DATABASE_NAME</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://docs.docker.com/engine/reference/commandline/cli/" target="_blank" rel="noopener">Use the Docker command line</a></p>
+<p><a href="https://ithelp.ithome.com.tw/articles/10186431" target="_blank" rel="noopener">【Day 3】 - Docker 基本指令操作</a></p>
+<p><a href="https://blog.kkbruce.net/2019/01/remove-dangling-docker-images-by-name.html#.XkqrjlMzZQI" target="_blank" rel="noopener">如何快速刪除狀態 DANGLING 的特定 DOCKER IMAGES</a></p>
+<p><a href="https://gist.github.com/spalladino/6d981f7b33f6e0afe6bb" target="_blank" rel="noopener">Backup and restore a mysql database from a running Docker mysql container</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://yuchitung.github.io/2020/07/10/useful-docker-command/" data-id="ckcg19mbv005biay58p2whmav" class="article-share-link">Share</a>
+      
+        <a href="https://yuchitung.github.io/2020/07/10/useful-docker-command/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li></ul>
+
+    </footer>
+  </div>
+  
+  
+</article>
+
+
+  
     <article id="post-useful-mysql-command" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/07/09/useful-mysql-command/" class="article-date">
@@ -142,7 +202,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/09/useful-mysql-command/" data-id="ckcexwbnk0019coy5fs1pin2y" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/09/useful-mysql-command/" data-id="ckcg19mc0005jiay5p6zrstwl" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/09/useful-mysql-command/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -190,6 +250,7 @@
 <p><a href="https://trello.com/c/wU6MOJLr/77-resolving-issue" target="_blank" rel="noopener">PhpStorm terminal 亂碼</a></p>
 <p><a href="https://learnku.com/laravel/t/5420/your-keyboard-shortcuts-please" target="_blank" rel="noopener">PHPStorm 快捷键大全（Win/Linux/Mac）</a></p>
 <h3 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h3><p><a href="https://docs.docker.com/docker-for-mac/install/" target="_blank" rel="noopener">Docker for Mac 安裝</a></p>
+<p><a href="https://medium.com/micheh/%E4%B8%8D%E9%9C%80%E8%A6%81-sudo-%E4%BE%86%E5%9F%B7%E8%A1%8C-docker-%E6%8C%87%E4%BB%A4-612d5a0d4b62" target="_blank" rel="noopener">不需要 sudo 來執行 Docker 指令</a></p>
 <h3 id="Laradock"><a href="#Laradock" class="headerlink" title="Laradock"></a>Laradock</h3><p><a href="https://laradock.io/" target="_blank" rel="noopener">安裝</a></p>
 <h3 id="env-的設定"><a href="#env-的設定" class="headerlink" title=".env 的設定"></a>.env 的設定</h3><p>程式碼路徑的設定<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">專案程式碼的 local path</span><br><span class="line">APP_CODE_PATH_HOST=../larabbs</span><br><span class="line"></span><br><span class="line">container 裡的 code path</span><br><span class="line">APP_CODE_PATH_CONTAINER=/var/www</span><br></pre></td></tr></table></figure></p>
 <p>有關 document root 的設定：</p>
@@ -213,7 +274,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/09/my-on-board-kit/" data-id="ckcexwbn6000hcoy5uzsxkkv7" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/09/my-on-board-kit/" data-id="ckcg19mbp004ziay5nuplkzz5" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/09/my-on-board-kit/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -296,7 +357,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcexwbnc000scoy5hy18tulm" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/" data-id="ckcg19mbt0054iay57rlb2owh" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/08/set-up-xdebug-with-phpstorm-and-laradock/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -396,7 +457,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/" data-id="ckcexwbmu0003coy5sdo68ws0" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/" data-id="ckcg19mbb0045iay5lshv4n27" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/07/06/cgi-fastcgi-and-phpfpm/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -480,7 +541,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckcexwbmw0004coy5t0cveg1t" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2020/04/21/csrf-introduction/" data-id="ckcg19mbd004aiay59dd2evdv" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2020/04/21/csrf-introduction/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -537,7 +598,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckcexwbnl001bcoy5zps6rwj4" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/" data-id="ckcg19mc3005siay58oe5gwc3" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/14/where-to-store-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -651,7 +712,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckcexwbn9000mcoy5tbua98fw" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/" data-id="ckcg19mbn004uiay55271nfz4" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/10/introduction-to-json-web-token/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -755,7 +816,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckcexwbnm001ecoy5pc09abnh" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/" data-id="ckcg19mc2005qiay5sivps79n" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/07/03/what-is-cross-site-scripting-and-how-to-prevent-it/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -830,69 +891,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckcexwbmr0001coy5ye1qmwcc" class="article-share-link">Share</a>
+      <a data-url="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/" data-id="ckcg19mbc0048iay5lwfeaa16" class="article-share-link">Share</a>
       
         <a href="https://yuchitung.github.io/2019/06/28/cross-origin-resource-sharing/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
-
-    </footer>
-  </div>
-  
-  
-</article>
-
-
-  
-    <article id="post-dependency-inversion-principle" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/24/dependency-inversion-principle/" class="article-date">
-  <time datetime="2019-06-24T14:37:28.000Z" itemprop="datePublished">2019-06-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/24/dependency-inversion-principle/">依賴反轉原則</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>Depend on abstractions, not on concretions.<br>– <cite>Robert C. Martin</cite></p>
-</blockquote>
-<p>依賴反轉原則，全名 <strong>Dependency Inversion Principle</strong>，簡稱 <strong>DIP</strong>。  </p>
-<h2 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h2><p>高階模組不應該依賴低階模組，兩者應該要依賴其<code>抽象</code>，抽象不要依賴細節，細節要依賴抽象。<br>不要把程式碼寫死某種實作上。</p>
-<h2 id="秘訣"><a href="#秘訣" class="headerlink" title="秘訣"></a>秘訣</h2><ul>
-<li>互動的部分交給<code>抽象類別</code>(abstract class)或<code>介面</code>(interface)</li>
-<li>會改變的實作，就放到子類別裡面</li>
-</ul>
-<h2 id="提醒"><a href="#提醒" class="headerlink" title="提醒"></a>提醒</h2><p>設計階段就可以先以抽象層次的互動來避開這個問題<br>抽象層次不要太高，以免無法對焦於真正關注的類別特徵</p>
-<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>來看個例子。<br>有一位計程車司機，他開著 Toyota 的車來工作。<br>但如果有天他換車了，換開 Nissan，原本的 drive function 就不能用了…</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TaxiDriver</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">drive</span><span class="params">(Toyota $toyota)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$driver = <span class="keyword">new</span> TaxiDriver();</span><br><span class="line">$driver-&gt;drive(<span class="keyword">new</span> Toyota);</span><br></pre></td></tr></table></figure>
-<p>那來改一改吧！<br>不要寫死成開 Toyota，改成開車就好了(<code>依賴抽象</code>），這樣隨時換開什麼車都可以。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> car</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> $name;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Toyota</span> <span class="keyword">extends</span> <span class="title">Car</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Nissan</span> <span class="keyword">extends</span> <span class="title">Car</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TexiDriver</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> $name;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;name = $name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">drive</span><span class="params">(Car $car)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$taxiDriver = <span class="keyword">new</span> TexiDriver();</span><br><span class="line">$taxiDriver-&gt;drive(<span class="keyword">new</span> Toyota);</span><br><span class="line">$taxiDriver-&gt;drive(<span class="keyword">new</span> Nissan);</span><br></pre></td></tr></table></figure>
-<p>然後我們可以發現，如果需要的話，計程車司機(TexiDriver)還可以繼承人(Human)類別，然後 drive function 抽出去成介面(interface)，TexiDriver 再實作 driver 介面，都可以再向上抽象，增加使用的彈性。</p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://youtu.be/SLCajYNcThE?t=5165" target="_blank" rel="noopener">PHP 也有 Day #19 - PHP 返樸歸真系列之從實例學設計模式 by 大澤木小鐵 (Jace Ju)​</a><br><a href="https://clouding.city/php/solid/" target="_blank" rel="noopener">物件導向設計原則 SOLID</a><br><a href="http://teddy-chen-tw.blogspot.com/2014/04/solid.html" target="_blank" rel="noopener">SOLID：五則皆變</a><br><a href="http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod" target="_blank" rel="noopener">The Principles of OOD</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/" data-id="ckcexwbmx0005coy5ilfltjw6" class="article-share-link">Share</a>
-      
-        <a href="https://yuchitung.github.io/2019/06/24/dependency-inversion-principle/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oop/">oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/solid/">solid</a></li></ul>
 
     </footer>
   </div>
@@ -920,7 +924,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PhpStorm/">PhpStorm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/env/">env</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kit/">kit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PhpStorm/">PhpStorm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/db/">db</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/design-pattern/">design-pattern</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/env/">env</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jQuery/">jQuery</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/job/">job</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kit/">kit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/laravel/">laravel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/">security</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/solid/">solid</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/timezone/">timezone</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li></ul>
     </div>
   </div>
 
@@ -930,7 +934,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/env/" style="font-size: 10px;">env</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kit/" style="font-size: 10px;">kit</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 13.33px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
+      <a href="/tags/PhpStorm/" style="font-size: 10px;">PhpStorm</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/db/" style="font-size: 10px;">db</a> <a href="/tags/design-pattern/" style="font-size: 10px;">design-pattern</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/env/" style="font-size: 10px;">env</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/jQuery/" style="font-size: 10px;">jQuery</a> <a href="/tags/job/" style="font-size: 10px;">job</a> <a href="/tags/kit/" style="font-size: 10px;">kit</a> <a href="/tags/laravel/" style="font-size: 10px;">laravel</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/mysql/" style="font-size: 13.33px;">mysql</a> <a href="/tags/oop/" style="font-size: 16.67px;">oop</a> <a href="/tags/php/" style="font-size: 13.33px;">php</a> <a href="/tags/security/" style="font-size: 10px;">security</a> <a href="/tags/solid/" style="font-size: 16.67px;">solid</a> <a href="/tags/timezone/" style="font-size: 10px;">timezone</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/web/" style="font-size: 20px;">web</a>
     </div>
   </div>
 
@@ -952,6 +956,10 @@
       <ul>
         
           <li>
+            <a href="/2020/07/10/useful-docker-command/">常用 docker 指令</a>
+          </li>
+        
+          <li>
             <a href="/2020/07/09/useful-mysql-command/">常用的 MySQL 指令</a>
           </li>
         
@@ -965,10 +973,6 @@
         
           <li>
             <a href="/2020/07/06/cgi-fastcgi-and-phpfpm/">CGI、FastCGI 和 PHP-FPM</a>
-          </li>
-        
-          <li>
-            <a href="/2020/04/21/csrf-introduction/">CSRF 介紹</a>
           </li>
         
       </ul>
